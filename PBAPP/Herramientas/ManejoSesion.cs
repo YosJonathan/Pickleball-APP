@@ -1,33 +1,28 @@
 ﻿namespace PBAPP.Herramientas
 {
-    public class ManejoSesion
+    public class ManejoSesion(IHttpContextAccessor httpContextAccessor)
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
-
-        public ManejoSesion(IHttpContextAccessor httpContextAccessor)
-        {
-            _httpContextAccessor = httpContextAccessor;
-        }
+        private readonly IHttpContextAccessor httpContextAccessor = httpContextAccessor;
 
         public void Agregar<T>(string key, T value)
         {
-            _httpContextAccessor?.HttpContext?.Session.SetString(key, System.Text.Json.JsonSerializer.Serialize(value));
+            this.httpContextAccessor?.HttpContext?.Session.SetString(key, System.Text.Json.JsonSerializer.Serialize(value));
         }
 
         public T? Obtener<T>(string key)
         {
-            var value = _httpContextAccessor?.HttpContext?.Session.GetString(key);
-            return value == null ? default : System.Text.Json.JsonSerializer.Deserialize<T>(value);
+            var value = this.httpContextAccessor?.HttpContext?.Session.GetString(key);
+            return value != null ? System.Text.Json.JsonSerializer.Deserialize<T>(value) : default;
         }
 
         public void Eliminar(string key)
         {
-            _httpContextAccessor?.HttpContext?.Session.Remove(key);
+            this.httpContextAccessor?.HttpContext?.Session.Remove(key);
         }
 
         public void Limpiar()
         {
-           _httpContextAccessor?.HttpContext?.Session.Clear();
+           this.httpContextAccessor?.HttpContext?.Session.Clear();
         }
     }
 }

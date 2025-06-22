@@ -1,4 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿// <copyright file="TieneToken.cs" company="Jonathan Yos">
+// Copyright © Jonathan Yos. All rights reserved.
+// </copyright>
+
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace PBAPP.Filtros

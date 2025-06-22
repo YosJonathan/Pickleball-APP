@@ -1,0 +1,31 @@
+{
+  "settings": {
+    "documentationRules": {
+      "companyName": "Jonathan Yos",
+      "copyrightText": "Copyright © Jonathan Yos. All rights reserved.",
+      "documentInternalElements": true,
+      "documentPrivateElements": false,
+      "fileNamingConvention": "metadata"
+    },
+    "orderingRules": {
+      "elementOrder": [
+        "kind",
+        "accessibility",
+        "constant",
+        "readonly",
+        "static"
+      ],
+      "systemUsingDirectivesFirst": true,
+      "usingDirectivesPlacement": "outsideNamespace"
+    },
+    "namingRules": {
+      "allowCommonHungarianPrefixes": true,
+      "includeInferredTupleElementNames": true,
+      "tupleElementNameCasing": "camelCase"
+    },
+    "layoutRules": {
+      "newlineAtEndOfFile": "require"
+    }
+  }
+}
+

@@ -10,7 +10,7 @@
         /// </summary>
         /// <param name="nacimiento">Nacimiento.</param>
         /// <returns>Edad.</returns>
-        public static int CalcularEdad(string nacimiento)
+        public static int CalcularEdad(string? nacimiento)
         {
             int edad = 0;
             if (DateTime.TryParse(nacimiento, out DateTime fechaNacimiento))
@@ -30,6 +30,7 @@
             {
                 Excepcion.BitacoraErrores("La fecha no tiene un formato válido.", nacimiento);
             }
+
             return edad;
         }
     }

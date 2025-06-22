@@ -1,7 +1,11 @@
-﻿using PBAPP.Valores;
+﻿// <copyright file="API.cs" company="Jonathan Yos">
+// Copyright © Jonathan Yos. All rights reserved.
+// </copyright>
+
 using System.Net.Http.Headers;
-using System.Text.Json;
 using System.Text;
+using System.Text.Json;
+using PBAPP.Valores;
 
 namespace PBAPP.Herramientas
 {
@@ -10,8 +14,6 @@ namespace PBAPP.Herramientas
     /// </summary>
     public class API
     {
-
-
         /// <summary>
         /// Consumir API, asincrono.
         /// </summary>
@@ -22,18 +24,18 @@ namespace PBAPP.Herramientas
         /// <param name="token">token.</param>
         /// <param name="metodo">metodo.</param>
         /// <param name="requestBody">Solicitud.</param>
-        /// <returns></returns>
+        /// <returns>Objeto Respuesta.</returns>
         public static async Task<TResponse> ConsumirApiAsync<TRequest, TResponse>(
         HttpClient httpClient,
         string url,
         string token,
         HttpMethod metodo,
-        TRequest requestBody = default)
+        TRequest? requestBody = default)
         {
             // Agregar token Bearer al header
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            HttpRequestMessage request = new HttpRequestMessage(metodo, Constantes.Dominio + url);
+            HttpRequestMessage request = new(metodo, Constantes.Dominio + url);
 
             // Si es POST y hay body, serializarlo
             if (metodo == HttpMethod.Post && requestBody != null)
@@ -46,18 +48,19 @@ namespace PBAPP.Herramientas
             {
                 HttpResponseMessage response = await httpClient.SendAsync(request);
                 response.EnsureSuccessStatusCode(); // Lanza excepción si no es 2xx
-
-                string contenido = await response.Content.ReadAsStringAsync();
-                TResponse resultado = JsonSerializer.Deserialize<TResponse>(contenido, new JsonSerializerOptions
+                JsonSerializerOptions options = new()
                 {
                     PropertyNameCaseInsensitive = true
-                });
+                };
+
+                string contenido = await response.Content.ReadAsStringAsync();
+                TResponse resultado = JsonSerializer.Deserialize<TResponse>(contenido, options) ?? Activator.CreateInstance<TResponse>();
 
                 return resultado;
             }
             catch (Exception ex)
             {
-                Excepcion.BitacoraErrores(ex.ToString(), new { solicitud = requestBody, token = token, ruta = url });
+                Excepcion.BitacoraErrores(ex.ToString(), new { solicitud = requestBody, token, ruta = url });
                 Console.WriteLine($"Error al consumir la API: {ex.Message}");
                 throw;
             }

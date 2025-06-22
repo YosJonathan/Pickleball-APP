@@ -9,12 +9,12 @@ namespace PBAPP.Herramientas
     public class Excepcion
     {
         /// <summary>
-        /// 
+        /// Bitacora de errores.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="excepcion"></param>
-        /// <param name="parametros"></param>
-        /// <param name="nombreMetodo"></param>
+        /// <typeparam name="T">Tipo de modelo.</typeparam>
+        /// <param name="excepcion">excepción.</param>
+        /// <param name="parametros">parametros de la función.</param>
+        /// <param name="nombreMetodo">Nombre de método.</param>
         public static void BitacoraErrores<T>(string excepcion, T parametros, [CallerMemberName] string nombreMetodo = "")
         {
             Console.WriteLine($"Metodo: {nombreMetodo} - Parametros: {ConvertirAJson(parametros)} - Excepción: {excepcion}");

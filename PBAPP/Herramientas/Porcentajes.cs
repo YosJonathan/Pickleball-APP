@@ -10,10 +10,12 @@
         public static string RedondearPorcentaje(string porcentaje)
         {
             if (string.IsNullOrWhiteSpace(porcentaje) || porcentaje.Trim() == "-")
+            {
                 return "0%";
+            }
 
             // Quitar el símbolo %
-            porcentaje = porcentaje.Replace("%", "").Trim();
+            porcentaje = porcentaje.Replace("%", string.Empty).Trim();
 
             // Reemplazar coma por punto en caso de formatos con coma decimal
             porcentaje = porcentaje.Replace(',', '.');
