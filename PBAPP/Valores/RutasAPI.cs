@@ -1,0 +1,25 @@
+﻿namespace PBAPP.Valores
+{
+    public static class RutasAPI
+    {
+        /// <summary>
+        /// Login.
+        /// </summary>
+        public const string rutaLogin = $"/auth/{Constantes.VersionAPI}/login";
+
+        /// <summary>
+        /// Perfil de usuario.
+        /// </summary>
+        public const string rutaPerfil = $"/user/{Constantes.VersionAPI}/profile";
+
+        /// <summary>
+        /// Generar ruta estadisticas de usuario.
+        /// </summary>
+        /// <param name="idUsuario">Id de usuario.</param>
+        /// <returns>Ruta de estadisticas.</returns>
+        public static string rutaEstadisticasUsuario(long idUsuario)
+        {
+            return $"/user/calculated/{Constantes.VersionAPI}/stats/{idUsuario}";
+        }
+    }
+}

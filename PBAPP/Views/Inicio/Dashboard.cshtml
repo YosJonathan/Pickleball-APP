@@ -1,0 +1,500 @@
+﻿@using PBAPP.Herramientas
+@using PBAPP.Modelos
+@{
+    PerfilUsuario? infoPefil = this.ViewData["infoPerfil"] as PerfilUsuario;
+    EstadisticasUsuarioCalculado? estadisticasUsuario = this.ViewData["estadisticasCalculadas"] as EstadisticasUsuarioCalculado;
+}
+
+@if (infoPefil == null || estadisticasUsuario == null)
+{
+    <p>Problemas al cargar la info</p>
+    return;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Webcrumbs Plugin</title>
+    <style>
+        @@import url(https://fonts.googleapis.com/css2?family=Lato&display=swap);
+        @@import url(https://fonts.googleapis.com/css2?family=Open+Sans&display=swap);
+        @@import url(https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200);
+    </style>
+</head>
+<body>
+    <div id="webcrumbs">
+        <div class="w-full bg-gray-900 min-h-screen p-4 sm:p-6">
+            <div class="flex flex-col gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 max-w-7xl mx-auto">
+                    <div class="col-span-1 md:col-span-2 lg:col-span-3 bg-gray-800 rounded-xl p-4 sm:p-6 border border-gray-700">
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-14 h-14 sm:w-16 sm:h-16 bg-primary-500 rounded-full flex items-center justify-center">
+                                    @if (string.IsNullOrEmpty(infoPefil?.Result.imageUrl))
+                                    {
+                                        <span class="text-xl sm:text-2xl font-bold text-white">
+                                            @infoPefil?.Result.FullName.Substring(0, 2).ToUpper()
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <img class="rounded-full flex items-center" src="@infoPefil?.Result.imageUrl" />
+                                    }
+                                </div>
+                                <div>
+                                    <h1 class="text-xl sm:text-2xl font-bold text-white">
+                                        @infoPefil?.Result.FullName (@Fechas.CalcularEdad(infoPefil.Result.Birthdate))
+                                        <img class="inline-flex items-center justify-center" src="https://flagsapi.com/@infoPefil?.Result.IsoCode/flat/32.png" />
+                                        <span class="inline-flex items-center justify-center w-4 h-4 bg-blue-500 rounded-full text-white text-[10px] ml-1">
+                                            ✓
+                                        </span>
+                                    </h1>
+                                    <p class="text-gray-400">@infoPefil?.Result.Addresses[0].FormattedAddress</p>
+
+                                    <div class="flex items-center space-x-1">
+                                        <span id="codigo" class="text-white font-mono bg-gray-700 px-3 py-1 rounded">@infoPefil?.Result.ReferralCode</span>
+
+                                        <!-- Botón con ícono de copiar -->
+                                        <button onclick="copiarCodigo()" class="text-gray-400 hover:text-white">
+                                            <span class="material-symbols-outlined mr-2">copy_all</span>
+                                        </button>
+
+                                        <!-- Badge de copiado (oculto por defecto) -->
+                                        <div id="badge-copiado" class="absolute-top-6 left-1/2-translate-x-1/2 bg-green-500 text-white text-xs font-semibold px-2 py-1 rounded-lg shadow transition-opacity duration-300 opacity-0 pointer-events-none">
+                                            Texto copiado
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-left sm:text-right mt-2 sm:mt-0">
+                                <div class="text-3xl sm:text-4xl font-bold text-primary-400">@infoPefil?.Result.Stats.Singles / @infoPefil?.Result.Stats.Doubles</div>
+                                <p class="text-gray-400">Singles / Doubles</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-800 rounded-xl p-4 sm:p-6 border border-gray-700">
+                        <h2 class="text-lg sm:text-xl font-semibold text-white mb-4 flex items-center">
+                            <span class="material-symbols-outlined mr-2">landscape</span> Estadísticas (Singles / Doubles)
+                        </h2>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-400">Partidos Jugados</span>
+                                <span class="text-white font-semibold">
+                                    @(estadisticasUsuario.Result.Singles.Wins +
+                                        estadisticasUsuario.Result.Singles.Losses + estadisticasUsuario.Result.Doubles.Wins +
+                                        estadisticasUsuario.Result.Doubles.Losses)
+                                </span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-400">Victorias</span>
+                                <span class="text-green-400 font-semibold">
+                                    @estadisticasUsuario.Result.Singles.Wins / @estadisticasUsuario.Result.Doubles.Wins
+                                </span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-400">Derrotas</span>
+                                <span class="text-red-400 font-semibold">
+                                    @estadisticasUsuario.Result.Singles.Losses / @estadisticasUsuario.Result.Doubles.Losses
+                                </span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-400">Win Rate</span>
+                                <span class="text-primary-400 font-semibold">
+                                    @estadisticasUsuario.Result.Singles.AveragePointsWonPercent / @estadisticasUsuario.Result.Doubles.AveragePointsWonPercent
+                                </span>
+                            </div>
+                            <div class="w-full bg-gray-700 rounded-full h-2">
+                                <div class="bg-primary-500 h-2 rounded-full" 
+                                style="width: @Porcentajes.RedondearPorcentaje(estadisticasUsuario.Result.Singles.AveragePointsWonPercent)"></div>
+                            </div>
+                            <div class="w-full bg-gray-700 rounded-full h-2">
+                                <div class="bg-primary-500 h-2 rounded-full"
+                                     style="width: @Porcentajes.RedondearPorcentaje(estadisticasUsuario.Result.Doubles.AveragePointsWonPercent)"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-800 rounded-xl p-4 sm:p-6 border border-gray-700">
+                        <h2 class="text-lg sm:text-xl font-semibold text-white mb-4 flex items-center justify-between">
+                            <span class="flex items-center">
+                                <span class="material-symbols-outlined mr-2">event</span> Eventos DUPR
+                            </span>
+                            <div class="flex space-x-2">
+                                <button class="w-7 h-7 sm:w-8 sm:h-8 bg-gray-700 hover:bg-gray-600 rounded-full flex items-center justify-center transition-colors">
+                                    <span class="material-symbols-outlined text-sm">keyboard_arrow_up</span>
+                                </button>
+                                <button class="w-7 h-7 sm:w-8 sm:h-8 bg-gray-700 hover:bg-gray-600 rounded-full flex items-center justify-center transition-colors">
+                                    <span class="material-symbols-outlined text-sm">keyboard_arrow_down</span>
+                                </button>
+                            </div>
+                        </h2>
+                        <div class="h-56 sm:h-72 overflow-hidden">
+                            <div class="space-y-3 animate-pulse">
+                                <div class="bg-gray-700 rounded-lg p-3 sm:p-4 hover:bg-gray-600 transition-colors cursor-pointer">
+                                    <div class="flex justify-between items-start mb-2">
+                                        <h3 class="font-semibold text-white">Torneo Regional</h3>
+                                        <button class="text-primary-400 hover:text-primary-300">
+                                            <span class="material-symbols-outlined text-sm">add_circle</span>
+                                        </button>
+                                    </div>
+                                    <p class="text-gray-400 text-sm">15 Marzo 2024</p>
+                                    <p class="text-gray-400 text-sm">Club Deportivo Central</p>
+                                </div>
+                                <div class="bg-gray-700 rounded-lg p-3 sm:p-4 hover:bg-gray-600 transition-colors cursor-pointer">
+                                    <div class="flex justify-between items-start mb-2">
+                                        <h3 class="font-semibold text-white">Liga Mensual</h3>
+                                        <button class="text-primary-400 hover:text-primary-300">
+                                            <span class="material-symbols-outlined text-sm">add_circle</span>
+                                        </button>
+                                    </div>
+                                    <p class="text-gray-400 text-sm">22 Marzo 2024</p>
+                                    <p class="text-gray-400 text-sm">Pickleball Arena</p>
+                                </div>
+                                <div class="bg-gray-700 rounded-lg p-3 sm:p-4 hover:bg-gray-600 transition-colors cursor-pointer">
+                                    <div class="flex justify-between items-start mb-2">
+                                        <h3 class="font-semibold text-white">Championship Cup</h3>
+                                        <button class="text-primary-400 hover:text-primary-300">
+                                            <span class="material-symbols-outlined text-sm">add_circle</span>
+                                        </button>
+                                    </div>
+                                    <p class="text-gray-400 text-sm">5 Abril 2024</p>
+                                    <p class="text-gray-400 text-sm">Estadio Nacional</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-800 rounded-xl p-4 sm:p-6 border border-gray-700">
+                        <h2 class="text-lg sm:text-xl font-semibold text-white mb-4 flex items-center">
+                            <span class="material-symbols-outlined mr-2">history</span> Últimos Partidos
+                        </h2>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between p-2 sm:p-3 bg-gray-700 rounded-lg">
+                                <div>
+                                    <p class="text-white font-medium text-sm sm:text-base">vs. María González</p>
+                                    <p class="text-gray-400 text-xs sm:text-sm">8 Mar 2024</p>
+                                </div>
+                                <div class="text-right">
+                                    <span class="bg-green-500 text-white px-2 py-1 rounded text-xs sm:text-sm">W</span>
+                                    <p class="text-gray-400 text-xs sm:text-sm mt-1">11-7</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between p-2 sm:p-3 bg-gray-700 rounded-lg">
+                                <div>
+                                    <p class="text-white font-medium text-sm sm:text-base">vs. Carlos Ruiz</p>
+                                    <p class="text-gray-400 text-xs sm:text-sm">5 Mar 2024</p>
+                                </div>
+                                <div class="text-right">
+                                    <span class="bg-red-500 text-white px-2 py-1 rounded text-xs sm:text-sm">L</span>
+                                    <p class="text-gray-400 text-xs sm:text-sm mt-1">9-11</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between p-2 sm:p-3 bg-gray-700 rounded-lg">
+                                <div>
+                                    <p class="text-white font-medium text-sm sm:text-base">vs. Ana Martínez</p>
+                                    <p class="text-gray-400 text-xs sm:text-sm">2 Mar 2024</p>
+                                </div>
+                                <div class="text-right">
+                                    <span class="bg-green-500 text-white px-2 py-1 rounded text-xs sm:text-sm">W</span>
+                                    <p class="text-gray-400 text-xs sm:text-sm mt-1">11-6</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between p-2 sm:p-3 bg-gray-700 rounded-lg">
+                                <div>
+                                    <p class="text-white font-medium text-sm sm:text-base">vs. Roberto Silva</p>
+                                    <p class="text-gray-400 text-xs sm:text-sm">28 Feb 2024</p>
+                                </div>
+                                <div class="text-right">
+                                    <span class="bg-green-500 text-white px-2 py-1 rounded text-xs sm:text-sm">W</span>
+                                    <p class="text-gray-400 text-xs sm:text-sm mt-1">11-4</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between p-2 sm:p-3 bg-gray-700 rounded-lg">
+                                <div>
+                                    <p class="text-white font-medium text-sm sm:text-base">vs. Laura Pérez</p>
+                                    <p class="text-gray-400 text-xs sm:text-sm">25 Feb 2024</p>
+                                </div>
+                                <div class="text-right">
+                                    <span class="bg-red-500 text-white px-2 py-1 rounded text-xs sm:text-sm">L</span>
+                                    <p class="text-gray-400 text-xs sm:text-sm mt-1">8-11</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-800 rounded-xl p-4 sm:p-6 border border-gray-700">
+                        <h2 class="text-lg sm:text-xl font-semibold text-white mb-4 flex items-center">
+                            <span class="material-symbols-outlined mr-2">calendar_month</span> Mi Calendario
+                        </h2>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between p-2 sm:p-3 bg-primary-500/20 border border-primary-500 rounded-lg">
+                                <div>
+                                    <p class="text-white font-medium text-sm sm:text-base">Entrenamiento</p>
+                                    <p class="text-gray-400 text-xs sm:text-sm">Hoy 18:00</p>
+                                </div>
+                                <button class="text-primary-400 hover:text-primary-300">
+                                    <span class="material-symbols-outlined text-base sm:text-lg">notifications</span>
+                                </button>
+                            </div>
+                            <div class="flex items-center justify-between p-2 sm:p-3 bg-gray-700 rounded-lg">
+                                <div>
+                                    <p class="text-white font-medium text-sm sm:text-base">Partido Liga</p>
+                                    <p class="text-gray-400 text-xs sm:text-sm">Mañana 16:00</p>
+                                </div>
+                                <button class="text-gray-400 hover:text-white">
+                                    <span class="material-symbols-outlined text-base sm:text-lg">notifications_off</span>
+                                </button>
+                            </div>
+                            <div class="flex items-center justify-between p-2 sm:p-3 bg-gray-700 rounded-lg">
+                                <div>
+                                    <p class="text-white font-medium text-sm sm:text-base">Torneo</p>
+                                    <p class="text-gray-400 text-xs sm:text-sm">15 Mar 10:00</p>
+                                </div>
+                                <button class="text-gray-400 hover:text-white">
+                                    <span class="material-symbols-outlined text-base sm:text-lg">notifications_off</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-span-1 md:col-span-2 bg-gray-800 rounded-xl p-4 sm:p-6 border border-gray-700">
+                        <h2 class="text-lg sm:text-xl font-semibold text-white mb-4 flex items-center">
+                            <span class="material-symbols-outlined mr-2">trending_up</span> Progreso de Partidos
+                        </h2>
+                        <div class="h-48 sm:h-64 bg-gray-700 rounded-lg p-4">
+                            <svg viewBox="0 0 400 200" class="w-full h-full">
+                                <defs>
+                                    <linearGradient id="https://images.unsplash.com/photo-1567095761054-7a02e69e5c43?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w3MzkyNDZ8MHwxfHNlYXJjaHwyfHxhYnN0cmFjdHxlbnwwfHx8fDE3NTAyOTgyNzJ8MA&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=1080"
+                                                    x1="0%"
+                                                    y1="0%"
+                                                    x2="0%"
+                                                    y2="100%">
+                                        <stop offset="0%" stop-color="rgb(59 130 246)" stop-opacity="0.3"></stop>
+                                        <stop offset="100%" stop-color="rgb(59 130 246)" stop-opacity="0"></stop>
+                                    </linearGradient>
+                                </defs>
+                                <polyline fill="none"
+                                          stroke="rgb(59 130 246)"
+                                          stroke-width="2"
+                                          points="20,160 70,140 120,120 170,100 220,90 270,85 320,80 370,75"></polyline>
+                                <polygon fill="url(https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w3MzkyNDZ8MHwxfHNlYXJjaHwxfHxhYnN0cmFjdHxlbnwwfHx8fDE3NTAyOTgyNzJ8MA&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=1080)"
+                                         points="20,160 70,140 120,120 170,100 220,90 270,85 320,80 370,75 370,180 20,180"></polygon>
+                                <g class="text-gray-400" font-size="12">
+                                    <text x="20" y="195">Ene</text>
+                                    <text x="120" y="195">Feb</text>
+                                    <text x="220" y="195">Mar</text>
+                                    <text x="320" y="195">Abr</text>
+                                </g>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="col-span-1 md:col-span-2 lg:col-span-3 bg-gray-800 rounded-xl p-4 sm:p-6 border border-gray-700">
+                        <h2 class="text-lg sm:text-xl font-semibold text-white mb-4 flex items-center">
+                            <span class="material-symbols-outlined mr-2">groups</span> Mis Clubes
+                        </h2>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                            <div class="bg-gray-700 rounded-lg p-3 sm:p-4 hover:bg-gray-600 transition-colors cursor-pointer">
+                                <div class="w-10 h-10 sm:w-12 sm:h-12 bg-primary-500 rounded-lg flex items-center justify-center mb-3">
+                                    <span class="material-symbols-outlined text-white">sports_tennis</span>
+                                </div>
+                                <h3 class="font-semibold text-white mb-1 text-sm sm:text-base">Club Central</h3>
+                                <p class="text-gray-400 text-xs sm:text-sm">Miembro desde 2023</p>
+                                <div class="flex items-center mt-2">
+                                    <span class="material-symbols-outlined text-yellow-400 text-sm mr-1">star</span>
+                                    <span class="text-gray-400 text-xs sm:text-sm">4.8</span>
+                                </div>
+                            </div>
+                            <div class="bg-gray-700 rounded-lg p-3 sm:p-4 hover:bg-gray-600 transition-colors cursor-pointer">
+                                <div class="w-10 h-10 sm:w-12 sm:h-12 bg-green-500 rounded-lg flex items-center justify-center mb-3">
+                                    <span class="material-symbols-outlined text-white">sports</span>
+                                </div>
+                                <h3 class="font-semibold text-white mb-1 text-sm sm:text-base">Arena Sport</h3>
+                                <p class="text-gray-400 text-xs sm:text-sm">Miembro desde 2022</p>
+                                <div class="flex items-center mt-2">
+                                    <span class="material-symbols-outlined text-yellow-400 text-sm mr-1">star</span>
+                                    <span class="text-gray-400 text-xs sm:text-sm">4.6</span>
+                                </div>
+                            </div>
+                            <div class="bg-gray-700 rounded-lg p-3 sm:p-4 hover:bg-gray-600 transition-colors cursor-pointer">
+                                <div class="w-10 h-10 sm:w-12 sm:h-12 bg-blue-500 rounded-lg flex items-center justify-center mb-3">
+                                    <span class="material-symbols-outlined text-white">home</span>
+                                </div>
+                                <h3 class="font-semibold text-white mb-1 text-sm sm:text-base">Elite Club</h3>
+                                <p class="text-gray-400 text-xs sm:text-sm">Miembro desde 2024</p>
+                                <div class="flex items-center mt-2">
+                                    <span class="material-symbols-outlined text-yellow-400 text-sm mr-1">star</span>
+                                    <span class="text-gray-400 text-xs sm:text-sm">4.9</span>
+                                </div>
+                            </div>
+                            <div class="bg-gray-700 rounded-lg p-3 sm:p-4 hover:bg-gray-600 transition-colors cursor-pointer border-2 border-dashed border-gray-600">
+                                <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gray-600 rounded-lg flex items-center justify-center mb-3">
+                                    <span class="material-symbols-outlined text-gray-400">add</span>
+                                </div>
+                                <h3 class="font-semibold text-gray-400 mb-1 text-sm sm:text-base">Unirse a Club</h3>
+                                <p class="text-gray-500 text-xs sm:text-sm">Buscar nuevos clubes</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            content: ["./src/**/*.{html,js}"],
+            theme: {
+                name: "Custom",
+                fontFamily: {
+                    sans: [
+                        "Open Sans",
+                        "ui-sans-serif",
+                        "system-ui",
+                        "sans-serif",
+                        '"Apple Color Emoji"',
+                        '"Segoe UI Emoji"',
+                        '"Segoe UI Symbol"',
+                        '"Noto Color Emoji"'
+                    ]
+                },
+                extend: {
+                    fontFamily: {
+                        title: [
+                            "Lato",
+                            "ui-sans-serif",
+                            "system-ui",
+                            "sans-serif",
+                            '"Apple Color Emoji"',
+                            '"Segoe UI Emoji"',
+                            '"Segoe UI Symbol"',
+                            '"Noto Color Emoji"'
+                        ],
+                        body: [
+                            "Open Sans",
+                            "ui-sans-serif",
+                            "system-ui",
+                            "sans-serif",
+                            '"Apple Color Emoji"',
+                            '"Segoe UI Emoji"',
+                            '"Segoe UI Symbol"',
+                            '"Noto Color Emoji"'
+                        ]
+                    },
+                    colors: {
+                        neutral: {
+                            50: "#f7f7f7",
+                            100: "#eeeeee",
+                            200: "#e0e0e0",
+                            300: "#cacaca",
+                            400: "#b1b1b1",
+                            500: "#999999",
+                            600: "#7f7f7f",
+                            700: "#676767",
+                            800: "#545454",
+                            900: "#464646",
+                            950: "#282828"
+                        },
+                        primary: {
+                            50: "#f3f1ff",
+                            100: "#e9e5ff",
+                            200: "#d5cfff",
+                            300: "#b7a9ff",
+                            400: "#9478ff",
+                            500: "#7341ff",
+                            600: "#631bff",
+                            700: "#611bf8",
+                            800: "#4607d0",
+                            900: "#3c08aa",
+                            950: "#220174",
+                            DEFAULT: "#611bf8"
+                        }
+                    }
+                },
+                fontSize: {
+                    xs: ["12px", {lineHeight: "19.200000000000003px"}],
+                    sm: ["14px", {lineHeight: "21px"}],
+                    base: ["16px", {lineHeight: "25.6px"}],
+                    lg: ["18px", {lineHeight: "27px"}],
+                    xl: ["20px", {lineHeight: "28px"}],
+                    "2xl": ["24px", {lineHeight: "31.200000000000003px"}],
+                    "3xl": ["30px", {lineHeight: "36px"}],
+                    "4xl": ["36px", {lineHeight: "41.4px"}],
+                    "5xl": ["48px", {lineHeight: "52.800000000000004px"}],
+                    "6xl": ["60px", {lineHeight: "66px"}],
+                    "7xl": ["72px", {lineHeight: "75.60000000000001px"}],
+                    "8xl": ["96px", {lineHeight: "100.80000000000001px"}],
+                    "9xl": ["128px", {lineHeight: "134.4px"}]
+                },
+                borderRadius: {
+                    none: "0px",
+                    sm: "6px",
+                    DEFAULT: "12px",
+                    md: "18px",
+                    lg: "24px",
+                    xl: "36px",
+                    "2xl": "48px",
+                    "3xl": "72px",
+                    full: "9999px"
+                },
+                spacing: {
+                    0: "0px",
+                    1: "4px",
+                    2: "8px",
+                    3: "12px",
+                    4: "16px",
+                    5: "20px",
+                    6: "24px",
+                    7: "28px",
+                    8: "32px",
+                    9: "36px",
+                    10: "40px",
+                    11: "44px",
+                    12: "48px",
+                    14: "56px",
+                    16: "64px",
+                    20: "80px",
+                    24: "96px",
+                    28: "112px",
+                    32: "128px",
+                    36: "144px",
+                    40: "160px",
+                    44: "176px",
+                    48: "192px",
+                    52: "208px",
+                    56: "224px",
+                    60: "240px",
+                    64: "256px",
+                    72: "288px",
+                    80: "320px",
+                    96: "384px",
+                    px: "1px",
+                    0.5: "2px",
+                    1.5: "6px",
+                    2.5: "10px",
+                    3.5: "14px"
+                }
+            },
+            plugins: [],
+            important: "#webcrumbs"
+        }
+            function copiarCodigo() {
+
+        const badge = document.getElementById("badge-copiado");
+            const codigo = document.getElementById("codigo").innerText;
+            navigator.clipboard.writeText(codigo).then(() => {
+            // Mostrar badge
+            badge.classList.remove("opacity-0");
+            badge.classList.add("opacity-100");
+
+            // Ocultar después de 2 segundos
+            setTimeout(() => {
+                badge.classList.remove("opacity-100");
+                badge.classList.add("opacity-0");
+            }, 2000);
+        }).catch(err => {
+            console.error("Error al copiar:", err);
+        });
+        }
+    </script>
+</body>
+</html>
