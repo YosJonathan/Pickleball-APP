@@ -7,6 +7,7 @@ using PBAPP.Filtros;
 using PBAPP.Herramientas;
 using PBAPP.Modelos;
 using PBAPP.Modelos.ClubsTodos;
+using PBAPP.Modelos.SeguidoresUsuario;
 using PBAPP.Valores;
 
 namespace PBAPP.Controladores
@@ -66,6 +67,18 @@ namespace PBAPP.Controladores
                 }
 
                 this.ViewData["clubesUsuario"] = clubsUsuario;
+
+                SeguidoresUsuarioResponse seguidores = new();
+                seguidores = await API.ConsumirApiAsync<object, SeguidoresUsuarioResponse>(
+                    this.httpClient, RutasAPI.RutaSeguidoresUsuario(idUsuario), token, HttpMethod.Get);
+
+                if (seguidores == null)
+                {
+                    Excepcion.BitacoraErrores("Seguidores del usuario es nulo", RutasAPI.RutaSeguidoresUsuario);
+                    return this.View();
+                }
+
+                this.ViewData["seguidoresUsuario"] = seguidores;
             }
             catch (Exception ex)
             {

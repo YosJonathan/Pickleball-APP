@@ -26,5 +26,15 @@
         {
             return $"/user/calculated/{Constantes.VersionAPI}/stats/{idUsuario}";
         }
+
+        /// <summary>
+        /// Genera ruta seguidores usuario.
+        /// </summary>
+        /// <param name="idUsuario">Id de usuario.</param>
+        /// <returns>Ruta de seguidores.</returns>
+        public static string RutaSeguidoresUsuario(long idUsuario)
+        {
+            return $"/activity/{Constantes.VersionAPIPuntoUno}/user/{idUsuario}/followingInfo";
+        }
     }
 }
