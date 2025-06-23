@@ -9,10 +9,7 @@
             this.FormattedAddress = string.Empty;
             this.Latitude = 0.0;
             this.Longitude = 0.0;
-            this.PlaceId = string.Empty;
-            this.Precision = string.Empty;
             this.Status = string.Empty;
-            this.Types = string.Empty;
             this.Create = DateTime.MinValue;
         }
 
@@ -26,13 +23,7 @@
 
         public double Longitude { get; set; }
 
-        public string PlaceId { get; set; }
-
-        public string Precision { get; set; }
-
         public string Status { get; set; }
-
-        public string Types { get; set; }
 
         public DateTime Create { get; set; }
     }

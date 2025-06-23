@@ -33,5 +33,27 @@
 
             return edad;
         }
+
+        /// <summary>
+        /// Obtener año.
+        /// </summary>
+        /// <param name="fecha">fecha.</param>
+        /// <returns>Años de la fecha.</returns>
+        public static int ObtenerAño(string fecha)
+        {
+            int añoFecha = 0;
+            if (DateTime.TryParse(fecha, out DateTime fechaConvertida))
+            {
+                añoFecha = fechaConvertida.Year;
+
+                return añoFecha;
+            }
+            else
+            {
+                Excepcion.BitacoraErrores("La fecha no tiene un formato válido.", fecha);
+            }
+
+            return añoFecha;
+        }
     }
 }

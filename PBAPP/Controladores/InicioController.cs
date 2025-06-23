@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using PBAPP.Filtros;
 using PBAPP.Herramientas;
 using PBAPP.Modelos;
+using PBAPP.Modelos.ClubsTodos;
 using PBAPP.Valores;
 
 namespace PBAPP.Controladores
@@ -49,11 +50,22 @@ namespace PBAPP.Controladores
                     this.httpClient, RutasAPI.RutaEstadisticasUsuario(idUsuario), token, HttpMethod.Get);
                 if (estadisticasUsuario == null)
                 {
-                    Excepcion.BitacoraErrores("Estadisticas del usuario es nulo", RutasAPI.RutaPerfil);
+                    Excepcion.BitacoraErrores("Estadisticas del usuario es nulo", RutasAPI.RutaEstadisticasUsuario);
                     return this.View();
                 }
 
                 this.ViewData["estadisticasCalculadas"] = estadisticasUsuario;
+
+                TodosClubsResponse clubsUsuario = new();
+                clubsUsuario = await API.ConsumirApiAsync<object, TodosClubsResponse>(
+                    this.httpClient, RutasAPI.RutaClubs, token, HttpMethod.Get);
+                if (clubsUsuario == null)
+                {
+                    Excepcion.BitacoraErrores("Clubes del usuario es nulo", RutasAPI.RutaClubs);
+                    return this.View();
+                }
+
+                this.ViewData["clubesUsuario"] = clubsUsuario;
             }
             catch (Exception ex)
             {

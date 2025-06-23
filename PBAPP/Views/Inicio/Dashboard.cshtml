@@ -1,11 +1,13 @@
 ﻿@using PBAPP.Herramientas
 @using PBAPP.Modelos
+@using PBAPP.Modelos.ClubsTodos
 @{
     PerfilUsuario? infoPefil = this.ViewData["infoPerfil"] as PerfilUsuario;
     EstadisticasUsuarioCalculado? estadisticasUsuario = this.ViewData["estadisticasCalculadas"] as EstadisticasUsuarioCalculado;
+    TodosClubsResponse? clubesUsuario = this.ViewData["clubesUsuario"] as TodosClubsResponse;
 }
 
-@if (infoPefil == null || estadisticasUsuario == null)
+@if (infoPefil == null || estadisticasUsuario == null || clubesUsuario == null)
 {
     <p>Problemas al cargar la info</p>
     return;
@@ -45,7 +47,8 @@
                                 </div>
                                 <div>
                                     <h1 class="text-xl sm:text-2xl font-bold text-white">
-                                        @infoPefil?.Result.FullName (@Fechas.CalcularEdad(infoPefil?.Result.Birthdate))
+                                        @infoPefil?.Result.FullName (@Fechas.CalcularEdad(infoPefil?.Result.Birthdate)) 
+                                        <span class="material-symbols-outlined mr-2">@infoPefil?.Result.Gender.ToLower()</span>
                                         <img class="inline-flex items-center justify-center" src="https://flagsapi.com/@infoPefil?.Result.IsoCode/flat/32.png" />
                                         <span class="inline-flex items-center justify-center w-4 h-4 bg-blue-500 rounded-full text-white text-[10px] ml-1">
                                             ✓
@@ -106,16 +109,16 @@
                                 </span>
                             </div>
                             <div class="w-full bg-gray-700 rounded-full h-2">
-                                <div class="bg-primary-500 h-2 rounded-full" 
-                                style="width: @Porcentajes.RedondearPorcentaje(estadisticasUsuario.Result.Singles.AveragePointsWonPercent)"></div>
+                                <div class="bg-primary-500 h-2 rounded-full"
+                                     style="width: @Porcentajes.RedondearPorcentaje(estadisticasUsuario.Result.Singles.AveragePointsWonPercent);"></div>
                             </div>
                             <div class="w-full bg-gray-700 rounded-full h-2">
                                 <div class="bg-primary-500 h-2 rounded-full"
-                                     style="width: @Porcentajes.RedondearPorcentaje(estadisticasUsuario.Result.Doubles.AveragePointsWonPercent)"></div>
+                                     style="width: @Porcentajes.RedondearPorcentaje(estadisticasUsuario.Result.Doubles.AveragePointsWonPercent);"></div>
                             </div>
                         </div>
                     </div>
-                    <div class="bg-gray-800 rounded-xl p-4 sm:p-6 border border-gray-700">
+                    @* <div class="bg-gray-800 rounded-xl p-4 sm:p-6 border border-gray-700">
                         <h2 class="text-lg sm:text-xl font-semibold text-white mb-4 flex items-center justify-between">
                             <span class="flex items-center">
                                 <span class="material-symbols-outlined mr-2">event</span> Eventos DUPR
@@ -163,8 +166,8 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="bg-gray-800 rounded-xl p-4 sm:p-6 border border-gray-700">
+                    </div> *@
+                    @* <div class="bg-gray-800 rounded-xl p-4 sm:p-6 border border-gray-700">
                         <h2 class="text-lg sm:text-xl font-semibold text-white mb-4 flex items-center">
                             <span class="material-symbols-outlined mr-2">history</span> Últimos Partidos
                         </h2>
@@ -220,8 +223,8 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="bg-gray-800 rounded-xl p-4 sm:p-6 border border-gray-700">
+                    </div> *@
+                    @* <div class="bg-gray-800 rounded-xl p-4 sm:p-6 border border-gray-700">
                         <h2 class="text-lg sm:text-xl font-semibold text-white mb-4 flex items-center">
                             <span class="material-symbols-outlined mr-2">calendar_month</span> Mi Calendario
                         </h2>
@@ -254,8 +257,8 @@
                                 </button>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-span-1 md:col-span-2 bg-gray-800 rounded-xl p-4 sm:p-6 border border-gray-700">
+                    </div> *@
+                    @* <div class="col-span-1 md:col-span-2 bg-gray-800 rounded-xl p-4 sm:p-6 border border-gray-700">
                         <h2 class="text-lg sm:text-xl font-semibold text-white mb-4 flex items-center">
                             <span class="material-symbols-outlined mr-2">trending_up</span> Progreso de Partidos
                         </h2>
@@ -263,20 +266,20 @@
                             <svg viewBox="0 0 400 200" class="w-full h-full">
                                 <defs>
                                     <linearGradient id="https://images.unsplash.com/photo-1567095761054-7a02e69e5c43?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w3MzkyNDZ8MHwxfHNlYXJjaHwyfHxhYnN0cmFjdHxlbnwwfHx8fDE3NTAyOTgyNzJ8MA&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=1080"
-                                                    x1="0%"
-                                                    y1="0%"
-                                                    x2="0%"
-                                                    y2="100%">
+                                    x1="0%"
+                                    y1="0%"
+                                    x2="0%"
+                                    y2="100%">
                                         <stop offset="0%" stop-color="rgb(59 130 246)" stop-opacity="0.3"></stop>
                                         <stop offset="100%" stop-color="rgb(59 130 246)" stop-opacity="0"></stop>
                                     </linearGradient>
                                 </defs>
                                 <polyline fill="none"
-                                          stroke="rgb(59 130 246)"
-                                          stroke-width="2"
-                                          points="20,160 70,140 120,120 170,100 220,90 270,85 320,80 370,75"></polyline>
-                                <polygon fill="url(https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w3MzkyNDZ8MHwxfHNlYXJjaHwxfHxhYnN0cmFjdHxlbnwwfHx8fDE3NTAyOTgyNzJ8MA&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=1080)"
-                                         points="20,160 70,140 120,120 170,100 220,90 270,85 320,80 370,75 370,180 20,180"></polygon>
+                                stroke="rgb(59 130 246)"
+                                stroke-width="2"
+                                points="20,160 70,140 120,120 170,100 220,90 270,85 320,80 370,75"></polyline>
+                                <polygon fill="url(https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=1080)"
+                                points="20,160 70,140 120,120 170,100 220,90 270,85 320,80 370,75 370,180 20,180"></polygon>
                                 <g class="text-gray-400" font-size="12">
                                     <text x="20" y="195">Ene</text>
                                     <text x="120" y="195">Feb</text>
@@ -285,46 +288,31 @@
                                 </g>
                             </svg>
                         </div>
-                    </div>
+                    </div> *@
 
                     <div class="col-span-1 md:col-span-2 lg:col-span-3 bg-gray-800 rounded-xl p-4 sm:p-6 border border-gray-700">
                         <h2 class="text-lg sm:text-xl font-semibold text-white mb-4 flex items-center">
                             <span class="material-symbols-outlined mr-2">groups</span> Mis Clubes
                         </h2>
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-                            <div class="bg-gray-700 rounded-lg p-3 sm:p-4 hover:bg-gray-600 transition-colors cursor-pointer">
-                                <div class="w-10 h-10 sm:w-12 sm:h-12 bg-primary-500 rounded-lg flex items-center justify-center mb-3">
-                                    <span class="material-symbols-outlined text-white">sports_tennis</span>
-                                </div>
-                                <h3 class="font-semibold text-white mb-1 text-sm sm:text-base">Club Central</h3>
-                                <p class="text-gray-400 text-xs sm:text-sm">Miembro desde 2023</p>
-                                <div class="flex items-center mt-2">
-                                    <span class="material-symbols-outlined text-yellow-400 text-sm mr-1">star</span>
-                                    <span class="text-gray-400 text-xs sm:text-sm">4.8</span>
-                                </div>
-                            </div>
-                            <div class="bg-gray-700 rounded-lg p-3 sm:p-4 hover:bg-gray-600 transition-colors cursor-pointer">
-                                <div class="w-10 h-10 sm:w-12 sm:h-12 bg-green-500 rounded-lg flex items-center justify-center mb-3">
-                                    <span class="material-symbols-outlined text-white">sports</span>
-                                </div>
-                                <h3 class="font-semibold text-white mb-1 text-sm sm:text-base">Arena Sport</h3>
-                                <p class="text-gray-400 text-xs sm:text-sm">Miembro desde 2022</p>
-                                <div class="flex items-center mt-2">
-                                    <span class="material-symbols-outlined text-yellow-400 text-sm mr-1">star</span>
-                                    <span class="text-gray-400 text-xs sm:text-sm">4.6</span>
-                                </div>
-                            </div>
-                            <div class="bg-gray-700 rounded-lg p-3 sm:p-4 hover:bg-gray-600 transition-colors cursor-pointer">
-                                <div class="w-10 h-10 sm:w-12 sm:h-12 bg-blue-500 rounded-lg flex items-center justify-center mb-3">
-                                    <span class="material-symbols-outlined text-white">home</span>
-                                </div>
-                                <h3 class="font-semibold text-white mb-1 text-sm sm:text-base">Elite Club</h3>
-                                <p class="text-gray-400 text-xs sm:text-sm">Miembro desde 2024</p>
-                                <div class="flex items-center mt-2">
-                                    <span class="material-symbols-outlined text-yellow-400 text-sm mr-1">star</span>
-                                    <span class="text-gray-400 text-xs sm:text-sm">4.9</span>
-                                </div>
-                            </div>
+                            @if (clubesUsuario != null)
+                            {
+                                foreach (var club in clubesUsuario.Results)
+                                {
+                                    <div class="bg-gray-700 rounded-lg p-3 sm:p-4 hover:bg-gray-600 transition-colors cursor-pointer">
+                                        <div class="w-10 h-10 sm:w-12 sm:h-12 bg-primary-500 rounded-lg flex items-center justify-center mb-3">
+                                            @* <span class="material-symbols-outlined text-white">sports_tennis</span> *@
+                                            <img src="@club.MediaUrl" class="w-10 h-10 rounded-full" />
+                                        </div>
+                                        <h3 class="font-semibold text-white mb-1 text-sm sm:text-base">@club.ClubName</h3>
+                                        <p class="text-gray-400 text-xs sm:text-sm">Creado en @Fechas.ObtenerAño(club.Created.ToString())</p>
+                                        <div class="flex items-center mt-2">
+                                            <span class="material-symbols-outlined text-yellow-400 text-sm mr-1">groups_2</span>
+                                            <span class="text-gray-400 text-xs sm:text-sm">@club.ClubMemberCount Miembros</span>
+                                        </div>
+                                    </div>
+                                }
+                            }
                             <div class="bg-gray-700 rounded-lg p-3 sm:p-4 hover:bg-gray-600 transition-colors cursor-pointer border-2 border-dashed border-gray-600">
                                 <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gray-600 rounded-lg flex items-center justify-center mb-3">
                                     <span class="material-symbols-outlined text-gray-400">add</span>

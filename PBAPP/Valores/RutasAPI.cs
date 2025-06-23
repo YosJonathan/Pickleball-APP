@@ -13,6 +13,11 @@
         public const string RutaPerfil = $"/user/{Constantes.VersionAPI}/profile";
 
         /// <summary>
+        /// Ruta de clubs propios.
+        /// </summary>
+        public const string RutaClubs = $"/club/roles/{Constantes.VersionAPI}/all";
+
+        /// <summary>
         /// Generar ruta estadisticas de usuario.
         /// </summary>
         /// <param name="idUsuario">Id de usuario.</param>

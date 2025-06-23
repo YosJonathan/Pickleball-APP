@@ -16,3 +16,6 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("StyleCop.CSharp.NamingRules", "SA1300:Element must begin with upper-case letter", Justification = "<pendiente>", Scope = "member", Target = "~P:PBAPP.Modelos.Login.RespuestaError.message")]
 [assembly: SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1009:Closing parenthesis must be spaced correctly", Justification = "<pendiente>", Scope = "type", Target = "~T:PBAPP.Controladores.InicioController")]
 [assembly: SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1009:Closing parenthesis must be spaced correctly", Justification = "<pendiente>", Scope = "type", Target = "~T:PBAPP.Controladores.InicioSesion")]
+[assembly: SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1010:Opening square brackets must be spaced correctly", Justification = "<pendiente>", Scope = "member", Target = "~M:PBAPP.Modelos.ClubsTodos.TodosClubsResponse.#ctor")]
+[assembly: SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1010:Opening square brackets must be spaced correctly", Justification = "<pendiente>", Scope = "member", Target = "~M:PBAPP.Modelos.Result.#ctor")]
+[assembly: SuppressMessage("Style", "IDE1006:Estilos de nombres", Justification = "<pendiente>", Scope = "member", Target = "~P:PBAPP.Modelos.Result.imageUrl")]
