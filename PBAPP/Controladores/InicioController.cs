@@ -9,6 +9,7 @@ using PBAPP.Modelos;
 using PBAPP.Modelos.ClubsTodos;
 using PBAPP.Modelos.SeguidoresUsuario;
 using PBAPP.Valores;
+using System.Threading;
 
 namespace PBAPP.Controladores
 {
@@ -46,31 +47,37 @@ namespace PBAPP.Controladores
 
                 long idUsuario = infoUsuario.Result.Id;
 
-                EstadisticasUsuarioCalculado estadisticasUsuario = new();
-                estadisticasUsuario = await API.ConsumirApiAsync<object, EstadisticasUsuarioCalculado>(
-                    this.httpClient, RutasAPI.RutaEstadisticasUsuario(idUsuario), token, HttpMethod.Get);
-                if (estadisticasUsuario == null)
+                var estadisticasUsuario = API.ConsumirApiAsync<object, EstadisticasUsuarioCalculado>(
+                                    this.httpClient, RutasAPI.RutaEstadisticasUsuario(idUsuario), token, HttpMethod.Get);
+
+                var clubsUsuario = API.ConsumirApiAsync<object, TodosClubsResponse>(
+                    this.httpClient, RutasAPI.RutaClubs, token, HttpMethod.Get);
+
+                var seguidoresUsuario = API.ConsumirApiAsync<object, SeguidoresUsuarioResponse>(
+                    this.httpClient, RutasAPI.RutaSeguidoresUsuario(idUsuario), token, HttpMethod.Get);
+
+                await Task.WhenAll(estadisticasUsuario, clubsUsuario, seguidoresUsuario);
+
+                var estadisticas = await estadisticasUsuario;
+                var clubs = await clubsUsuario;
+                var seguidores = await seguidoresUsuario;
+
+                if (estadisticas == null)
                 {
                     Excepcion.BitacoraErrores("Estadisticas del usuario es nulo", RutasAPI.RutaEstadisticasUsuario);
                     return this.View();
                 }
 
-                this.ViewData["estadisticasCalculadas"] = estadisticasUsuario;
+                this.ViewData["estadisticasCalculadas"] = estadisticas;
 
-                TodosClubsResponse clubsUsuario = new();
-                clubsUsuario = await API.ConsumirApiAsync<object, TodosClubsResponse>(
-                    this.httpClient, RutasAPI.RutaClubs, token, HttpMethod.Get);
-                if (clubsUsuario == null)
+                if (clubs == null)
                 {
                     Excepcion.BitacoraErrores("Clubes del usuario es nulo", RutasAPI.RutaClubs);
                     return this.View();
                 }
 
-                this.ViewData["clubesUsuario"] = clubsUsuario;
+                this.ViewData["clubesUsuario"] = clubs;
 
-                SeguidoresUsuarioResponse seguidores = new();
-                seguidores = await API.ConsumirApiAsync<object, SeguidoresUsuarioResponse>(
-                    this.httpClient, RutasAPI.RutaSeguidoresUsuario(idUsuario), token, HttpMethod.Get);
 
                 if (seguidores == null)
                 {

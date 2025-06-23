@@ -55,5 +55,16 @@
 
             return añoFecha;
         }
+
+        /// <summary>
+        /// Obtener el mes de la fecha.
+        /// </summary>
+        /// <param name="fecha">fecha.</param>
+        /// <returns>Mes escrito de la fecha.</returns>
+        public static string ObtenerNombreMes(DateTime fecha)
+        {
+            // Cultura en español para obtener el nombre del mes en español
+            return fecha.ToString("MMMM", new System.Globalization.CultureInfo("es-ES"));
+        }
     }
 }

@@ -36,5 +36,15 @@
         {
             return $"/activity/{Constantes.VersionAPIPuntoUno}/user/{idUsuario}/followingInfo";
         }
+
+        /// <summary>
+        /// Obtener rating usuario.
+        /// </summary>
+        /// <param name="idUsuario">Id de usuario.</param>
+        /// <returns>Historial rating.</returns>
+        public static string RutaHistorialRatingUsuario(long idUsuario)
+        {
+            return $"/player/{Constantes.VersionAPI}/{idUsuario}/rating-history";
+        }
     }
 }
