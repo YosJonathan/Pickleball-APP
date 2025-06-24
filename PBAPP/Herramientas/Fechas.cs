@@ -63,8 +63,8 @@
         /// <returns>Mes escrito de la fecha.</returns>
         public static string ObtenerNombreMes(DateTime fecha)
         {
-            // Cultura en español para obtener el nombre del mes en español
-            return fecha.ToString("MMMM", new System.Globalization.CultureInfo("es-ES"));
+            var mes = fecha.ToString("MMMM", new System.Globalization.CultureInfo("es-ES"));
+            return char.ToUpper(mes[0]) + mes[1..];
         }
     }
 }

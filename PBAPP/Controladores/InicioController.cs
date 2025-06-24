@@ -2,14 +2,15 @@
 // Copyright © Jonathan Yos. All rights reserved.
 // </copyright>
 
+using System.Threading;
 using Microsoft.AspNetCore.Mvc;
 using PBAPP.Filtros;
 using PBAPP.Herramientas;
 using PBAPP.Modelos;
 using PBAPP.Modelos.ClubsTodos;
+using PBAPP.Modelos.RatingUsuario;
 using PBAPP.Modelos.SeguidoresUsuario;
 using PBAPP.Valores;
-using System.Threading;
 
 namespace PBAPP.Controladores
 {
@@ -56,11 +57,19 @@ namespace PBAPP.Controladores
                 var seguidoresUsuario = API.ConsumirApiAsync<object, SeguidoresUsuarioResponse>(
                     this.httpClient, RutasAPI.RutaSeguidoresUsuario(idUsuario), token, HttpMethod.Get);
 
-                await Task.WhenAll(estadisticasUsuario, clubsUsuario, seguidoresUsuario);
+                var ratingSinglesUsuario = API.ConsumirApiAsync<RatingUsuarioRequest, RatingUsuarioResponse>(
+                    this.httpClient, RutasAPI.RutaHistorialRatingUsuario(idUsuario), token, HttpMethod.Post, Rating.LlenarRatingMensual(DateTime.Now, "SINGLES"));
+
+                var ratingDoublesUsuario = API.ConsumirApiAsync<RatingUsuarioRequest, RatingUsuarioResponse>(
+                    this.httpClient, RutasAPI.RutaHistorialRatingUsuario(idUsuario), token, HttpMethod.Post, Rating.LlenarRatingMensual(DateTime.Now, "DOUBLES"));
+
+                await Task.WhenAll(estadisticasUsuario, clubsUsuario, seguidoresUsuario, ratingSinglesUsuario, ratingDoublesUsuario);
 
                 var estadisticas = await estadisticasUsuario;
                 var clubs = await clubsUsuario;
                 var seguidores = await seguidoresUsuario;
+                var ratingSingles = await ratingSinglesUsuario;
+                var ratingDoubles = await ratingDoublesUsuario;
 
                 if (estadisticas == null)
                 {
@@ -78,7 +87,6 @@ namespace PBAPP.Controladores
 
                 this.ViewData["clubesUsuario"] = clubs;
 
-
                 if (seguidores == null)
                 {
                     Excepcion.BitacoraErrores("Seguidores del usuario es nulo", RutasAPI.RutaSeguidoresUsuario);
@@ -86,6 +94,12 @@ namespace PBAPP.Controladores
                 }
 
                 this.ViewData["seguidoresUsuario"] = seguidores;
+
+                double.TryParse(infoUsuario.Result.Stats.Singles, out double singles);
+                double.TryParse(infoUsuario.Result.Stats.Doubles, out double doubles);
+
+                List<RatingPorFecha> ratingPorFechas = Rating.GenerarHistorialGrafica(ratingSingles, ratingDoubles, singles, doubles);
+                this.ViewData["RatingPorMes"] = ratingPorFechas;
             }
             catch (Exception ex)
             {

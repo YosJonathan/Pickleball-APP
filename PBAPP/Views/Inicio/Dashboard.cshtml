@@ -1,15 +1,21 @@
 ﻿@using PBAPP.Herramientas
 @using PBAPP.Modelos
 @using PBAPP.Modelos.ClubsTodos
+@using PBAPP.Modelos.RatingUsuario
 @using PBAPP.Modelos.SeguidoresUsuario
+@using System.Text.Json
 @{
     PerfilUsuario? infoPefil = this.ViewData["infoPerfil"] as PerfilUsuario;
     EstadisticasUsuarioCalculado? estadisticasUsuario = this.ViewData["estadisticasCalculadas"] as EstadisticasUsuarioCalculado;
     TodosClubsResponse? clubesUsuario = this.ViewData["clubesUsuario"] as TodosClubsResponse;
     SeguidoresUsuarioResponse? seguidoresUsuario = this.ViewData["seguidoresUsuario"] as SeguidoresUsuarioResponse;
+    List<RatingPorFecha>? ratingPorFechas = this.ViewData["RatingPorMes"] as List<RatingPorFecha>;
+    var fechas = ratingPorFechas?.Select(x => x.Fecha.ToString("yyyy-MM-dd")) ?? new List<string>();
+    var singles = ratingPorFechas?.Select(x => x.Singles) ?? new List<double>();
+    var doubles = ratingPorFechas?.Select(x => x.Doubles) ?? new List<double>();
 }
 
-@if (infoPefil == null || estadisticasUsuario == null || clubesUsuario == null || seguidoresUsuario == null)
+@if (infoPefil == null || estadisticasUsuario == null || clubesUsuario == null || seguidoresUsuario == null || ratingPorFechas == null)
 {
     <p>Problemas al cargar la info</p>
     return;
@@ -44,7 +50,7 @@
                                     }
                                     else
                                     {
-                                        <img class="rounded-full flex items-center" src="@infoPefil?.Result.imageUrl" />
+                                        <img class="rounded-full flex items-center" src="@infoPefil?.Result.imageUrl" loading="lazy" />
                                     }
                                 </div>
                                 <div>
@@ -266,7 +272,7 @@
                     </div> *@
                     <div class="col-span-1 md:col-span-2 bg-gray-800 rounded-xl p-4 sm:p-6 border border-gray-700">
                         <h2 class="text-lg sm:text-xl font-semibold text-white mb-4 flex items-center">
-                            <span class="material-symbols-outlined mr-2">trending_up</span> Ranking @Fechas.ObtenerNombreMes(DateTime.Now)
+                            <span class="material-symbols-outlined mr-2">trending_up</span> Ranking  @Fechas.ObtenerNombreMes(DateTime.Now)
                         </h2>
                         <div class="h-48 sm:h-64 rounded-lg p-4">
                             <canvas id="myChart" class="w-full h-64 bg-transparent"></canvas>
@@ -284,7 +290,7 @@
                                 {
                                     <div class="bg-gray-700 rounded-lg p-3 sm:p-4 hover:bg-gray-600 transition-colors cursor-pointer">
                                         <div class="w-10 h-10 sm:w-12 sm:h-12 bg-primary-500 rounded-lg flex items-center justify-center mb-3">
-                                            <img src="@club.MediaUrl" class="w-10 h-10 rounded-full" />
+                                            <img src="@club.MediaUrl" class="w-10 h-10 rounded-full" loading="lazy" />
                                         </div>
                                         <h3 class="font-semibold text-white mb-1 text-sm sm:text-base">@club.ClubName</h3>
                                         <p class="text-gray-400 text-xs sm:text-sm">Creado en @Fechas.ObtenerAño(club.Created.ToString())</p>
@@ -468,59 +474,63 @@
         }
     </script>
     <script>
+        const labels = @Html.Raw(JsonSerializer.Serialize(fechas));
+        const singlesData = @Html.Raw(JsonSerializer.Serialize(singles));
+        const doublesData = @Html.Raw(JsonSerializer.Serialize(doubles));
+
         const ctx = document.getElementById('myChart').getContext('2d');
 
         const lineChart = new Chart(ctx, {
-          type: 'line',
-          data: {
-            labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo'],
-            datasets: [
-              {
-                label: 'Singles',
-                data: [30, 50, 40, 60, 70],
-                borderColor: '#3b82f6',
-                backgroundColor: 'rgba(59, 130, 246, 0.2)',
-                tension: 0.4,
-              },
-              {
-                label: 'Doubles',
-                data: [20, 40, 35, 55, 65],
-                borderColor: '#10b981',
-                backgroundColor: 'rgba(16, 185, 129, 0.2)',
-                tension: 0.4,
-              }
-            ]
-          },
-          options: {
-            backgroundColor: 'transparent',
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: {
-                labels: {
-                  color: '#ffffff' // Color del texto de la leyenda
-                }
-              }
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Singles',
+                        data: singlesData,
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                        tension: 0.4,
+                    },
+                    {
+                        label: 'Doubles',
+                        data: doublesData,
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                        tension: 0.4,
+                    }
+                ]
             },
-            scales: {
-              x: {
-                ticks: {
-                  color: '#ffffff' // Color de las etiquetas del eje X
+            options: {
+                backgroundColor: 'transparent',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: '#ffffff'
+                        }
+                    }
                 },
-                grid: {
-                  color: 'rgba(255, 255, 255, 0.1)' // líneas de la cuadrícula
+                scales: {
+                    x: {
+                        ticks: {
+                            color: '#ffffff'
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        }
+                    },
+                    y: {
+                        ticks: {
+                            color: '#ffffff'
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        }
+                    }
                 }
-              },
-              y: {
-                ticks: {
-                  color: '#ffffff' // Color de las etiquetas del eje Y
-                },
-                grid: {
-                  color: 'rgba(255, 255, 255, 0.1)' // líneas de la cuadrícula
-                }
-              }
             }
-          }
         });
     </script>
 </body>

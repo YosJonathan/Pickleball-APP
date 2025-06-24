@@ -48,10 +48,11 @@ namespace PBAPP.Herramientas
             {
                 HttpResponseMessage response = await httpClient.SendAsync(request);
                 response.EnsureSuccessStatusCode(); // Lanza excepción si no es 2xx
-                JsonSerializerOptions options = new()
+                JsonSerializerOptions jsonSerializerOptions = new()
                 {
                     PropertyNameCaseInsensitive = true
                 };
+                JsonSerializerOptions options = jsonSerializerOptions;
 
                 string contenido = await response.Content.ReadAsStringAsync();
                 TResponse resultado = JsonSerializer.Deserialize<TResponse>(contenido, options) ?? Activator.CreateInstance<TResponse>();
