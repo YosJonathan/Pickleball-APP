@@ -369,7 +369,7 @@
                                 sports_tennis
                             </span> Ultimos 4 partidos
                         </h2>
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 overflow-x-auto">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4">
                             @if (historialPartidos?.Result.Hits != null)
                             {
                                 int conteo = 0;
@@ -377,11 +377,11 @@
                                 {
                                     if (conteo < 4)
                                     {
-                                        <div class="text-white rounded-xl shadow-md overflow-hidden">
+                                        <div style="min-width:280px;" class="text-white rounded-xl shadow-md overflow-hidden">
                                             <div class="p-6">
                                                 <div class="flex justify-between items-center mb-4">
-                                                    <h2 class="text-xl text-white font-bold text-gray-800">@item.EventFormat Match</h2>
-                                                    <span class="px-3 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">Completed</span>
+                                                    <h2 class="text-xl text-white font-bold text-gray-800">Match</h2>
+                                                    <span class="px-3 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">@item.EventFormat</span>
                                                 </div>
 
                                                 <div class="flex flex-col md:flex-row justify-between gap-4">
@@ -389,16 +389,16 @@
                                                     {
                                                         <!-- Team 1 -->
                                                         <div class="flex flex-col items-center text-center">
-                                                            <div class="flex-space-x-3">
+                                                            <div class="flex -space-x-3">
                                                                 @if (item?.Teams[0].Player1 != null)
                                                                 {
-                                                                    <div class="w-12 h-12 rounded-full bg-gray-200 ring-2 ring-blue-500 overflow-hidden z-10">
+                                                                    <div class="w-12 h-12 rounded-full bg-gray-200 ring-2 ring-blue-500 overflow-hidden z-20">
                                                                         <img src="@Estilos.ObtenerImagen(item.Teams[0].Player1.ImageUrl)" title="@item.Teams[0].Player1.FullName" class="w-full h-full object-cover" />
                                                                     </div>
                                                                 }
                                                                 @if (item?.Teams[0].Player2 != null)
                                                                 {
-                                                                    <div class="w-12 h-12 rounded-full bg-gray-200 ring-2 ring-blue-500 overflow-hidden">
+                                                                    <div class="w-12 h-12 rounded-full bg-gray-200 ring-2 ring-blue-500 overflow-hidden z-10">
                                                                         <img src="@Estilos.ObtenerImagen(item.Teams[0].Player2.ImageUrl)" title="@item.Teams[0].Player2.FullName" class="w-full h-full object-cover" />
                                                                     </div>
                                                                 }
@@ -448,16 +448,16 @@
                                                     {
                                                         <!-- Team 2 -->
                                                         <div class="flex flex-col items-center text-center">
-                                                            <div class="flex-space-x-3">
+                                                            <div class="flex -space-x-3">
                                                                 @if (item?.Teams[1].Player1 != null)
                                                                 {
-                                                                    <div class="w-12 h-12 rounded-full bg-gray-200 ring-2 ring-blue-500 overflow-hidden z-10">
+                                                                    <div class="w-12 h-12 rounded-full bg-gray-200 ring-2 ring-blue-500 overflow-hidden z-20">
                                                                         <img src="@Estilos.ObtenerImagen(item.Teams[1].Player1.ImageUrl)" title="@item.Teams[1].Player1.FullName" class="w-full h-full object-cover" />
                                                                     </div>
                                                                 }
                                                                 @if (item?.Teams[1].Player2 != null)
                                                                 {
-                                                                    <div class="w-12 h-12 rounded-full bg-gray-200 ring-2 ring-blue-500 overflow-hidden">
+                                                                    <div class="w-12 h-12 rounded-full bg-gray-200 ring-2 ring-blue-500 overflow-hidden z-10">
                                                                         <img src="@Estilos.ObtenerImagen(item.Teams[1].Player2.ImageUrl)" title="@item.Teams[1].Player2.FullName" class="w-full h-full object-cover" />
                                                                     </div>
                                                                 }

@@ -100,12 +100,12 @@ namespace PBAPP.Controladores
 
                 this.ViewData["seguidoresUsuario"] = seguidores;
 
-                if (double.TryParse(infoUsuario.Result.Stats.Singles, out double singles))
+                if (!double.TryParse(infoUsuario.Result.Stats.Singles, out double singles))
                 {
                     singles = 0;
                 }
 
-                if (double.TryParse(infoUsuario.Result.Stats.Doubles, out double doubles))
+                if (!double.TryParse(infoUsuario.Result.Stats.Doubles, out double doubles))
                 {
                     doubles = 0;
                 }
