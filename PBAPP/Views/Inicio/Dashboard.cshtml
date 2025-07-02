@@ -392,13 +392,13 @@
                                                             <div class="flex -space-x-3">
                                                                 @if (item?.Teams[0].Player1 != null)
                                                                 {
-                                                                    <div class="w-12 h-12 rounded-full bg-gray-200 ring-2 ring-blue-500 overflow-hidden z-20">
+                                                                    <div class="w-12 h-12 rounded-full bg-gray-200 ring-2 ring-gray-800 overflow-hidden z-20">
                                                                         <img src="@Estilos.ObtenerImagen(item.Teams[0].Player1.ImageUrl)" title="@item.Teams[0].Player1.FullName" class="w-full h-full object-cover" />
                                                                     </div>
                                                                 }
                                                                 @if (item?.Teams[0].Player2 != null)
                                                                 {
-                                                                    <div class="w-12 h-12 rounded-full bg-gray-200 ring-2 ring-blue-500 overflow-hidden z-10">
+                                                                    <div class="w-12 h-12 rounded-full bg-gray-200 ring-2 ring-gray-800 overflow-hidden z-10">
                                                                         <img src="@Estilos.ObtenerImagen(item.Teams[0].Player2.ImageUrl)" title="@item.Teams[0].Player2.FullName" class="w-full h-full object-cover" />
                                                                     </div>
                                                                 }
@@ -451,13 +451,13 @@
                                                             <div class="flex -space-x-3">
                                                                 @if (item?.Teams[1].Player1 != null)
                                                                 {
-                                                                    <div class="w-12 h-12 rounded-full bg-gray-200 ring-2 ring-blue-500 overflow-hidden z-20">
+                                                                    <div class="w-12 h-12 rounded-full bg-gray-200 ring-2 ring-gray-800 overflow-hidden z-20">
                                                                         <img src="@Estilos.ObtenerImagen(item.Teams[1].Player1.ImageUrl)" title="@item.Teams[1].Player1.FullName" class="w-full h-full object-cover" />
                                                                     </div>
                                                                 }
                                                                 @if (item?.Teams[1].Player2 != null)
                                                                 {
-                                                                    <div class="w-12 h-12 rounded-full bg-gray-200 ring-2 ring-blue-500 overflow-hidden z-10">
+                                                                    <div class="w-12 h-12 rounded-full bg-gray-200 ring-2 ring-gray-800 overflow-hidden z-10">
                                                                         <img src="@Estilos.ObtenerImagen(item.Teams[1].Player2.ImageUrl)" title="@item.Teams[1].Player2.FullName" class="w-full h-full object-cover" />
                                                                     </div>
                                                                 }
@@ -522,7 +522,7 @@
                                 foreach (var club in clubesUsuario.Results)
                                 {
                                     <div class="bg-gray-700 rounded-lg p-3 sm:p-4 hover:bg-gray-600 transition-colors cursor-pointer">
-                                        <div class="w-10 h-10 sm:w-12 sm:h-12 bg-primary-500 rounded-lg flex items-center justify-center mb-3">
+                                        <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gray-700 rounded-lg flex items-center justify-center mb-3">
                                             <img src="@club.MediaUrl" class="w-10 h-10 rounded-full" loading="lazy" />
                                         </div>
                                         <h3 class="font-semibold text-white mb-1 text-sm sm:text-base">@club.ClubName</h3>
