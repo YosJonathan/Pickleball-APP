@@ -46,5 +46,15 @@
         {
             return $"/player/{Constantes.VersionAPI}/{idUsuario}/rating-history";
         }
+
+        /// <summary>
+        /// Obtener historial de partidos del usuario.
+        /// </summary>
+        /// <param name="idUsuario">Id de usuario.</param>
+        /// <returns>Ruta de historial de partidos.</returns>
+        public static string RutaHistorialPartidosUsuario(long idUsuario)
+        {
+            return $"/player/{Constantes.VersionAPI}/{idUsuario}/history";
+        }
     }
 }

@@ -16,4 +16,14 @@ public static class Constantes
     /// Dominio.
     /// </summary>
     public const string Dominio = "https://api.dupr.gg";
+
+    /// <summary>
+    /// Key de API maps.
+    /// </summary>
+    public const string Key = "AIzaSyAFyRdwt9pF6sPZ4yzvV3iYXho84HQAFes";
+
+    /// <summary>
+    /// Imagen por defecto.
+    /// </summary>
+    public const string ImagenPorDefecto = "https://cdn-icons-png.flaticon.com/32/3177/3177440.png";
 }

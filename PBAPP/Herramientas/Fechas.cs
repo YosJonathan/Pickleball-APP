@@ -1,4 +1,6 @@
-﻿namespace PBAPP.Herramientas
+﻿using Microsoft.VisualBasic;
+
+namespace PBAPP.Herramientas
 {
     /// <summary>
     /// Clase de fechas.
@@ -65,6 +67,28 @@
         {
             var mes = fecha.ToString("MMMM", new System.Globalization.CultureInfo("es-ES"));
             return char.ToUpper(mes[0]) + mes[1..];
+        }
+
+        public static string ObtenerFechaTexto(DateTime? fecha)
+        {
+            string respuesta = string.Empty;
+            if (fecha == null)
+            {
+                return respuesta;
+            }
+
+            DateTime nuevaFecha = (DateTime)fecha;
+
+            string diaSemana = nuevaFecha.ToString("dddd", new System.Globalization.CultureInfo("es-ES"));
+            string dia = nuevaFecha.Day.ToString();
+            string mes = nuevaFecha.ToString("MMMM", new System.Globalization.CultureInfo("es-ES"));
+
+            // Verificamos si es hoy
+            respuesta = nuevaFecha.Date == DateTime.Today
+                ? $"Hoy, {diaSemana} {dia} de {mes}"
+                : $"{diaSemana} {dia} de {mes}";
+
+            return respuesta;
         }
     }
 }

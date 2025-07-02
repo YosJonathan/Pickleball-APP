@@ -8,6 +8,7 @@ using PBAPP.Filtros;
 using PBAPP.Herramientas;
 using PBAPP.Modelos;
 using PBAPP.Modelos.ClubsTodos;
+using PBAPP.Modelos.HistorialPartidos;
 using PBAPP.Modelos.RatingUsuario;
 using PBAPP.Modelos.SeguidoresUsuario;
 using PBAPP.Valores;
@@ -63,13 +64,17 @@ namespace PBAPP.Controladores
                 var ratingDoublesUsuario = API.ConsumirApiAsync<RatingUsuarioRequest, RatingUsuarioResponse>(
                     this.httpClient, RutasAPI.RutaHistorialRatingUsuario(idUsuario), token, HttpMethod.Post, Rating.LlenarRatingMensual(DateTime.Now, "DOUBLES"));
 
-                await Task.WhenAll(estadisticasUsuario, clubsUsuario, seguidoresUsuario, ratingSinglesUsuario, ratingDoublesUsuario);
+                var historialPartidosUsuario = API.ConsumirApiAsync<HistorialPartidosRequest, HistorialPartidosResponse>(
+                    this.httpClient, RutasAPI.RutaHistorialPartidosUsuario(idUsuario), token, HttpMethod.Post, HistorialPartidos.LlenarParametrosHistorial());
+
+                await Task.WhenAll(estadisticasUsuario, clubsUsuario, seguidoresUsuario, ratingSinglesUsuario, ratingDoublesUsuario, historialPartidosUsuario);
 
                 var estadisticas = await estadisticasUsuario;
                 var clubs = await clubsUsuario;
                 var seguidores = await seguidoresUsuario;
                 var ratingSingles = await ratingSinglesUsuario;
                 var ratingDoubles = await ratingDoublesUsuario;
+                var historialPartidos = await historialPartidosUsuario;
 
                 if (estadisticas == null)
                 {
@@ -95,11 +100,22 @@ namespace PBAPP.Controladores
 
                 this.ViewData["seguidoresUsuario"] = seguidores;
 
-                double.TryParse(infoUsuario.Result.Stats.Singles, out double singles);
-                double.TryParse(infoUsuario.Result.Stats.Doubles, out double doubles);
+                if (double.TryParse(infoUsuario.Result.Stats.Singles, out double singles))
+                {
+                    singles = 0;
+                }
+
+                if (double.TryParse(infoUsuario.Result.Stats.Doubles, out double doubles))
+                {
+                    doubles = 0;
+                }
 
                 List<RatingPorFecha> ratingPorFechas = Rating.GenerarHistorialGrafica(ratingSingles, ratingDoubles, singles, doubles);
                 this.ViewData["RatingPorMes"] = ratingPorFechas;
+
+                List<HistorialPorMapa> historial = HistorialPartidos.GenerarLugaresPartidos(historialPartidos);
+                this.ViewData["HistorialLugaresPartidos"] = historial;
+                this.ViewData["HistorialPartidos"] = historialPartidos;
             }
             catch (Exception ex)
             {
