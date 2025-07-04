@@ -56,5 +56,15 @@
         {
             return $"/player/{Constantes.VersionAPI}/{idUsuario}/history";
         }
+
+        /// <summary>
+        /// Obtener ruta de perfil de usuario.
+        /// </summary>
+        /// <param name="idUsuario">Id de usuario.</param>
+        /// <returns>Ruta de perfil de usuario.</returns>
+        public static string RutaPerfilUsuario(long idUsuario)
+        {
+            return $"/player/{Constantes.VersionAPI}/{idUsuario}";
+        }
     }
 }

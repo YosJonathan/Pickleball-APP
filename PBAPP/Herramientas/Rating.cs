@@ -42,14 +42,14 @@ namespace PBAPP.Herramientas
                 .GroupBy(x => DateTime.Parse(x.Date).Date)
                 .ToDictionary(
                     g => g.Key,
-                    g => g.OrderByDescending(x => DateTime.Parse(x.Date)).First().Rating) ?? new Dictionary<DateTime, double>();
+                    g => g.OrderByDescending(x => DateTime.Parse(x.Date)).First().Rating) ?? [];
 
             var doubles = doublesResponse?.Result?.RatingHistory?
                 .Where(x => DateTime.TryParse(x.Date, out _))
                 .GroupBy(x => DateTime.Parse(x.Date).Date)
                 .ToDictionary(
                     g => g.Key,
-                    g => g.OrderByDescending(x => DateTime.Parse(x.Date)).First().Rating) ?? new Dictionary<DateTime, double>();
+                    g => g.OrderByDescending(x => DateTime.Parse(x.Date)).First().Rating) ?? [];
 
             // Si ambos vienen vacíos
             if (singles.Count == 0 && doubles.Count == 0)

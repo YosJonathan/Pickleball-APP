@@ -24,14 +24,14 @@ namespace PBAPP.Herramientas
             return resultado;
         }
 
-        public static string ObtenerNombres(string? nombre1, string? nombre2)
+        public static string ObtenerNombres(string? nombre1, string? nombre2, string perfilNombre1, string perfilNombre2)
         {
             string respuesta;
 
             nombre1 = string.IsNullOrEmpty(nombre1) ? string.Empty : nombre1;
 
-            respuesta = !string.IsNullOrEmpty(nombre2) ? $"<p title='{nombre1}'>{PrimerNombre(nombre1)}</p> & <p title='{nombre2}'>{PrimerNombre(nombre2)}</p>" :
-                $"<p title='{nombre1}'>{PrimerNombre(nombre1)}</p>";
+            respuesta = !string.IsNullOrEmpty(nombre2) ? $"<a href='{perfilNombre1}'><p title='{nombre1}'>{PrimerNombre(nombre1)}</p></a> & <a href='{perfilNombre2}'><p title='{nombre2}'>{PrimerNombre(nombre2)}</p></a>" :
+                $"<a href='{perfilNombre1}'><p title='{nombre1}'>{PrimerNombre(nombre1)}</p></a>";
 
             return respuesta;
         }

@@ -9,14 +9,14 @@ namespace PBAPP.Herramientas
         /// </summary>
         /// <param name="limite">Limite de registros.</param>
         /// <returns>Lista de historial.</returns>
-        public static HistorialPartidosRequest LlenarParametrosHistorial(int limite = 25)
+        public static HistorialPartidosRequest LlenarParametrosHistorial(int limite = 25, int offset=0)
         {
             limite = limite > 25 ? 25 : limite;
             HistorialPartidosRequest respuesta = new()
             {
                 Filters = null,
                 Limit = limite,
-                Offset = 0
+                Offset = offset
             };
 
             respuesta.Sort.Order = "DESC";

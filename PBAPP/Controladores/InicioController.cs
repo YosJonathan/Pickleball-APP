@@ -9,9 +9,11 @@ using PBAPP.Herramientas;
 using PBAPP.Modelos;
 using PBAPP.Modelos.ClubsTodos;
 using PBAPP.Modelos.HistorialPartidos;
+using PBAPP.Modelos.Perfil;
 using PBAPP.Modelos.RatingUsuario;
 using PBAPP.Modelos.SeguidoresUsuario;
 using PBAPP.Valores;
+using static System.Reflection.Metadata.BlobBuilder;
 
 namespace PBAPP.Controladores
 {
@@ -29,11 +31,6 @@ namespace PBAPP.Controladores
             try
             {
                 token = this.manejoSesion.Obtener<string>("token_Peticiones");
-                if (string.IsNullOrEmpty(token))
-                {
-                    Excepcion.BitacoraErrores("Token vacio", token);
-                    return this.View();
-                }
 
                 PerfilUsuario infoUsuario = new();
 
@@ -120,6 +117,151 @@ namespace PBAPP.Controladores
             catch (Exception ex)
             {
                 Excepcion.BitacoraErrores(ex.ToString(), token);
+            }
+
+            return this.View();
+        }
+
+        [TieneToken]
+        public async Task<ActionResult> ObtenerTrofeos()
+        {
+            var resultado = new { Partidos = 0 };
+            string? token = string.Empty;
+
+            try
+            {
+
+                token = this.manejoSesion.Obtener<string>("token_Peticiones");
+
+                PerfilUsuario infoUsuario = new();
+
+                infoUsuario = await API.ConsumirApiAsync<object, PerfilUsuario>(this.httpClient, RutasAPI.RutaPerfil, token, HttpMethod.Get);
+
+                if (infoUsuario == null)
+                {
+                    Excepcion.BitacoraErrores("Información del usuario es nulo", RutasAPI.RutaPerfil);
+                    return this.View();
+                }
+
+                long idUsuario = infoUsuario.Result.Id;
+
+                //*******************************************************************************
+                int totalRegistros = 42; // Puedes traer este número de la API si lo tienes
+                int pageSize = 25;
+                int totalPaginas = (int)Math.Ceiling((double)totalRegistros / pageSize);
+
+                var tareas = new List<Task<HistorialPartidosResponse>>();
+
+                for (int page = 1; page <= totalPaginas; page++)
+                {
+                    string ruta = RutasAPI.RutaHistorialPartidosUsuario(idUsuario) + $"?page={page}&limit={pageSize}";
+
+                    var tarea = API.ConsumirApiAsync<HistorialPartidosRequest, HistorialPartidosResponse>(
+                        this.httpClient,
+                        ruta,
+                        token,
+                        HttpMethod.Post,
+                        HistorialPartidos.LlenarParametrosHistorial(25, page));
+
+                    tareas.Add(tarea);
+                }
+
+                // Ejecutar todas las tareas en paralelo
+                var resultados = await Task.WhenAll(tareas);
+
+                // Combinar todos los partidos en una sola lista
+                var todosLosPartidos = resultados
+                    .Where(r => r != null && r.Result.Hits != null)
+                    .SelectMany(r => r.Result.Hits)
+                    .ToList();
+            }
+            catch (Exception ex)
+            {
+                Excepcion.BitacoraErrores(ex.ToString(), new { });
+                throw;
+            }
+
+            return this.Json(resultado);
+        }
+
+        [TieneToken]
+        public async Task<ActionResult> Perfil(long perfil)
+        {
+            try
+            {
+                string? token = this.manejoSesion.Obtener<string>("token_Peticiones");
+
+                var informacionPerfilExterno = API.ConsumirApiAsync<object, PerilUsuarioExterno>(
+                                    this.httpClient, RutasAPI.RutaPerfilUsuario(perfil), token, HttpMethod.Get);
+
+                var estadisticasUsuario = API.ConsumirApiAsync<object, EstadisticasUsuarioCalculado>(
+                                    this.httpClient, RutasAPI.RutaEstadisticasUsuario(perfil), token, HttpMethod.Get);
+
+                var seguidoresUsuario = API.ConsumirApiAsync<object, SeguidoresUsuarioResponse>(
+                    this.httpClient, RutasAPI.RutaSeguidoresUsuario(perfil), token, HttpMethod.Get);
+
+                var ratingSinglesUsuario = API.ConsumirApiAsync<RatingUsuarioRequest, RatingUsuarioResponse>(
+                    this.httpClient, RutasAPI.RutaHistorialRatingUsuario(perfil), token, HttpMethod.Post, Rating.LlenarRatingMensual(DateTime.Now, "SINGLES"));
+
+                var ratingDoublesUsuario = API.ConsumirApiAsync<RatingUsuarioRequest, RatingUsuarioResponse>(
+                    this.httpClient, RutasAPI.RutaHistorialRatingUsuario(perfil), token, HttpMethod.Post, Rating.LlenarRatingMensual(DateTime.Now, "DOUBLES"));
+
+                var historialPartidosUsuario = API.ConsumirApiAsync<HistorialPartidosRequest, HistorialPartidosResponse>(
+                    this.httpClient, RutasAPI.RutaHistorialPartidosUsuario(perfil), token, HttpMethod.Post, HistorialPartidos.LlenarParametrosHistorial());
+
+                await Task.WhenAll(estadisticasUsuario, seguidoresUsuario, ratingSinglesUsuario, ratingDoublesUsuario, historialPartidosUsuario, informacionPerfilExterno);
+
+                var estadisticas = await estadisticasUsuario;
+                var seguidores = await seguidoresUsuario;
+                var ratingSingles = await ratingSinglesUsuario;
+                var ratingDoubles = await ratingDoublesUsuario;
+                var historialPartidos = await historialPartidosUsuario;
+                var infoUsuario = await informacionPerfilExterno;
+
+                if (infoUsuario == null)
+                {
+                    Excepcion.BitacoraErrores("Información del usuario es nulo", RutasAPI.RutaPerfilUsuario(perfil));
+                    return this.View();
+                }
+
+                this.ViewData["infoPerfil"] = infoUsuario;
+
+                if (estadisticas == null)
+                {
+                    Excepcion.BitacoraErrores("Estadisticas del usuario es nulo", RutasAPI.RutaEstadisticasUsuario);
+                    return this.View();
+                }
+
+                this.ViewData["estadisticasCalculadas"] = estadisticas;
+
+                if (seguidores == null)
+                {
+                    Excepcion.BitacoraErrores("Seguidores del usuario es nulo", RutasAPI.RutaSeguidoresUsuario);
+                    return this.View();
+                }
+
+                this.ViewData["seguidoresUsuario"] = seguidores;
+
+                if (!double.TryParse(infoUsuario.Result.Ratings.Singles, out double singles))
+                {
+                    singles = 0;
+                }
+
+                if (!double.TryParse(infoUsuario.Result.Ratings.Doubles, out double doubles))
+                {
+                    doubles = 0;
+                }
+
+                List<RatingPorFecha> ratingPorFechas = Rating.GenerarHistorialGrafica(ratingSingles, ratingDoubles, singles, doubles);
+                this.ViewData["RatingPorMes"] = ratingPorFechas;
+
+                List<HistorialPorMapa> historial = HistorialPartidos.GenerarLugaresPartidos(historialPartidos);
+                this.ViewData["HistorialLugaresPartidos"] = historial;
+                this.ViewData["HistorialPartidos"] = historialPartidos;
+            }
+            catch (Exception ex)
+            {
+                Excepcion.BitacoraErrores(ex.ToString(), new { });
             }
 
             return this.View();
