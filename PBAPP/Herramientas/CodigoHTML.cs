@@ -9,9 +9,15 @@ namespace PBAPP.Herramientas
             string resultado = string.Empty;
             double? ahora;
 
+
+
             try
             {
                 ahora = tipo.Contains("DOUBLES", StringComparison.CurrentCultureIgnoreCase) ? actuales?.Doubles : actuales?.Singles;
+
+                antes = antes == null ? ahora : antes;
+                rating = rating == null ? 0 : rating;
+
                 resultado = rating > 0 ? $"<p class='text-green-400' title='Antes: {Decimales.Ultimos3Decimales(antes)} → Ahora: {Decimales.Ultimos3Decimales(ahora)}'>{Decimales.Ultimos3Decimales(rating)} <span class=\"material-symbols-outlined\">arrow_drop_up</span></p>" :
                             rating == 0 ? $"<p class='text-gray-400'>{Decimales.Ultimos3Decimales(rating)} <span class=\"material-symbols-outlined\">check_indeterminate_small</span></p>" :
                             $"<p class='text-red-400' title='Antes: {Decimales.Ultimos3Decimales(antes)} → Ahora: {Decimales.Ultimos3Decimales(ahora)}'>{Decimales.Ultimos3Decimales(rating)} <span class=\"material-symbols-outlined\">arrow_drop_down</span></p>";

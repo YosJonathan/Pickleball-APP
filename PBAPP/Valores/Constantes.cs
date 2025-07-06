@@ -18,12 +18,24 @@ public static class Constantes
     public const string Dominio = "https://api.dupr.gg";
 
     /// <summary>
-    /// Key de API maps.
+    /// Key.
     /// </summary>
     public const string Key = "AIzaSyAFyRdwt9pF6sPZ4yzvV3iYXho84HQAFes";
 
     /// <summary>
+    /// Archivo de bd.
+    /// </summary>
+    public const string BD = "Data Source=sitios.db";
+
+    /// <summary>
+    /// Radio de la tierra.
+    /// </summary>
+    public const double RadioDeLaTierra = 6371.0;
+
+    /// <summary>
     /// Imagen por defecto.
     /// </summary>
-    public const string ImagenPorDefecto = "https://cdn-icons-png.flaticon.com/32/3177/3177440.png";
+    public static string ImagenPorDefecto(bool imagenPerfil = false) { 
+        return imagenPerfil ? "https://cdn-icons-png.flaticon.com/256/3177/3177440.png" :
+            "https://cdn-icons-png.flaticon.com/64/3177/3177440.png"; }
 }

@@ -4,6 +4,7 @@
 
 using System.Threading;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using PBAPP.Filtros;
 using PBAPP.Herramientas;
 using PBAPP.Modelos;
@@ -12,6 +13,7 @@ using PBAPP.Modelos.HistorialPartidos;
 using PBAPP.Modelos.Perfil;
 using PBAPP.Modelos.RatingUsuario;
 using PBAPP.Modelos.SeguidoresUsuario;
+using PBAPP.Repositorio;
 using PBAPP.Valores;
 using static System.Reflection.Metadata.BlobBuilder;
 
@@ -43,6 +45,22 @@ namespace PBAPP.Controladores
                 }
 
                 this.ViewData["infoPerfil"] = infoUsuario;
+
+
+                if (infoUsuario.Result.Addresses.Count > 0)
+                {
+                    Address direccion = infoUsuario.Result.Addresses[0];
+                    if (!SitioRepositorio.ExisteSitioPorLugar(direccion.ShortAddress))
+                    {
+                        HistorialPorMapa nuevo = new HistorialPorMapa
+                        {
+                            Lugar = direccion.ShortAddress,
+                            Latencia = direccion.Latitude,
+                            Longitud = direccion.Longitude
+                        };
+                        SitioRepositorio.AgregarSitio(nuevo);
+                    }
+                }
 
                 long idUsuario = infoUsuario.Result.Id;
 
@@ -110,7 +128,7 @@ namespace PBAPP.Controladores
                 List<RatingPorFecha> ratingPorFechas = Rating.GenerarHistorialGrafica(ratingSingles, ratingDoubles, singles, doubles);
                 this.ViewData["RatingPorMes"] = ratingPorFechas;
 
-                List<HistorialPorMapa> historial = HistorialPartidos.GenerarLugaresPartidos(historialPartidos);
+                List<HistorialPorMapa> historial = await HistorialPartidos.GenerarLugaresPartidos(historialPartidos);
                 this.ViewData["HistorialLugaresPartidos"] = historial;
                 this.ViewData["HistorialPartidos"] = historialPartidos;
             }
@@ -123,6 +141,8 @@ namespace PBAPP.Controladores
         }
 
         [TieneToken]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<ActionResult> ObtenerTrofeos()
         {
             var resultado = new { Partidos = 0 };
@@ -130,9 +150,8 @@ namespace PBAPP.Controladores
 
             try
             {
-
                 token = this.manejoSesion.Obtener<string>("token_Peticiones");
-
+                Console.WriteLine(token);
                 PerfilUsuario infoUsuario = new();
 
                 infoUsuario = await API.ConsumirApiAsync<object, PerfilUsuario>(this.httpClient, RutasAPI.RutaPerfil, token, HttpMethod.Get);
@@ -152,16 +171,16 @@ namespace PBAPP.Controladores
 
                 var tareas = new List<Task<HistorialPartidosResponse>>();
 
-                for (int page = 1; page <= totalPaginas; page++)
+                for (int page = 0; page < totalPaginas; page++)
                 {
-                    string ruta = RutasAPI.RutaHistorialPartidosUsuario(idUsuario) + $"?page={page}&limit={pageSize}";
+                    int offset = pageSize * page;
 
                     var tarea = API.ConsumirApiAsync<HistorialPartidosRequest, HistorialPartidosResponse>(
                         this.httpClient,
-                        ruta,
+                        RutasAPI.RutaHistorialPartidosUsuario(idUsuario),
                         token,
                         HttpMethod.Post,
-                        HistorialPartidos.LlenarParametrosHistorial(25, page));
+                        HistorialPartidos.LlenarParametrosHistorial(25, offset));
 
                     tareas.Add(tarea);
                 }
@@ -173,7 +192,11 @@ namespace PBAPP.Controladores
                 var todosLosPartidos = resultados
                     .Where(r => r != null && r.Result.Hits != null)
                     .SelectMany(r => r.Result.Hits)
+                    .DistinctBy(p => p.DisplayIdentity)
                     .ToList();
+
+                resultado = new { Partidos = todosLosPartidos.Count };
+
             }
             catch (Exception ex)
             {
@@ -255,13 +278,39 @@ namespace PBAPP.Controladores
                 List<RatingPorFecha> ratingPorFechas = Rating.GenerarHistorialGrafica(ratingSingles, ratingDoubles, singles, doubles);
                 this.ViewData["RatingPorMes"] = ratingPorFechas;
 
-                List<HistorialPorMapa> historial = HistorialPartidos.GenerarLugaresPartidos(historialPartidos);
+                List<HistorialPorMapa> historial = await HistorialPartidos.GenerarLugaresPartidos(historialPartidos);
                 this.ViewData["HistorialLugaresPartidos"] = historial;
                 this.ViewData["HistorialPartidos"] = historialPartidos;
             }
             catch (Exception ex)
             {
                 Excepcion.BitacoraErrores(ex.ToString(), new { });
+            }
+
+            return this.View();
+        }
+
+        [TieneToken]
+        public async Task<ActionResult> Mapa()
+        {
+            string? token = string.Empty;
+            try
+            {
+                token = this.manejoSesion.Obtener<string>("token_Peticiones");
+                Console.WriteLine(token);
+                PerfilUsuario infoUsuario = new();
+
+                infoUsuario = await API.ConsumirApiAsync<object, PerfilUsuario>(this.httpClient, RutasAPI.RutaPerfil, token, HttpMethod.Get);
+
+                if (infoUsuario == null)
+                {
+                    Excepcion.BitacoraErrores("Información del usuario es nulo", RutasAPI.RutaPerfil);
+                    return this.View();
+                }
+            }
+            catch (Exception ex)
+            {
+                Excepcion.BitacoraErrores(ex.ToString(), new {});
             }
 
             return this.View();
