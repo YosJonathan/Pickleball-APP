@@ -33,3 +33,6 @@
 Publish/
 # Ignorar archivo de base de datos SQLite
 *.db
+
+# Archivos de claves secretas
+apikeys.secret.json

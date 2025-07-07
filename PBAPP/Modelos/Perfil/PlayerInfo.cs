@@ -2,7 +2,6 @@
 
 namespace PBAPP.Modelos.Perfil
 {
-
     public class PlayerInfo
     {
         public PlayerInfo()
@@ -85,5 +84,4 @@ namespace PBAPP.Modelos.Perfil
         [JsonPropertyName("lucraConnected")]
         public bool LucraConnected { get; set; }
     }
-
 }

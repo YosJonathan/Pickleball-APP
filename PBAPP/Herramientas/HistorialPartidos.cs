@@ -1,7 +1,6 @@
 ﻿using PBAPP.Modelos.HistorialPartidos;
 using PBAPP.Repositorio;
 using PBAPP.Servicios;
-using System.Threading.Tasks;
 
 namespace PBAPP.Herramientas
 {
@@ -11,6 +10,7 @@ namespace PBAPP.Herramientas
         /// Llenar parametros para obtener el historial.
         /// </summary>
         /// <param name="limite">Limite de registros.</param>
+        /// <param name="offset">Offset de registros.</param>
         /// <returns>Lista de historial.</returns>
         public static HistorialPartidosRequest LlenarParametrosHistorial(int limite = 25, int offset = 0)
         {
@@ -68,7 +68,6 @@ namespace PBAPP.Herramientas
                     {
                         Console.WriteLine($"Existe registro para: {item.Lugar}");
                     }
-
                 }
             }
 

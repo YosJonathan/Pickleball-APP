@@ -54,7 +54,7 @@ namespace PBAPP.Herramientas
             return respuesta;
         }
 
-        public static string ObtenerImagen(string? url,bool fotoPerfil = false)
+        public static string ObtenerImagen(string? url, bool fotoPerfil = false)
         {
             return string.IsNullOrEmpty(url) ? Constantes.ImagenPorDefecto(fotoPerfil) : url;
         }

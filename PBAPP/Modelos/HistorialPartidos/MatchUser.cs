@@ -2,7 +2,6 @@
 
 namespace PBAPP.Modelos.HistorialPartidos
 {
-
     public class MatchUser
     {
         public MatchUser()
@@ -25,5 +24,4 @@ namespace PBAPP.Modelos.HistorialPartidos
         [JsonPropertyName("referralCode")]
         public string ReferralCode { get; set; }
     }
-
 }

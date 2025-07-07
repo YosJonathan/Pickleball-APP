@@ -36,7 +36,7 @@ namespace PBAPP.Controladores
 
                 PerfilUsuario infoUsuario = new();
 
-                infoUsuario = await API.ConsumirApiAsync<object, PerfilUsuario>(this.httpClient, RutasAPI.RutaPerfil, token, HttpMethod.Get);
+                infoUsuario = await API.ConsumirApiAsync<object, PerfilUsuario>(this.httpClient, RutasAPI.RutaPerfil, token ?? string.Empty, HttpMethod.Get);
 
                 if (infoUsuario == null)
                 {
@@ -49,7 +49,7 @@ namespace PBAPP.Controladores
                     Address direccion = infoUsuario.Result.Addresses[0];
                     if (!SitioRepositorio.ExisteSitioPorLugar(direccion.ShortAddress))
                     {
-                        HistorialPorMapa nuevo = new HistorialPorMapa
+                        HistorialPorMapa nuevo = new()
                         {
                             Lugar = direccion.ShortAddress,
                             Latencia = direccion.Latitude,
@@ -62,22 +62,22 @@ namespace PBAPP.Controladores
                 long idUsuario = infoUsuario.Result.Id;
 
                 var estadisticasUsuario = API.ConsumirApiAsync<object, EstadisticasUsuarioCalculado>(
-                                    this.httpClient, RutasAPI.RutaEstadisticasUsuario(idUsuario), token, HttpMethod.Get);
+                                    this.httpClient, RutasAPI.RutaEstadisticasUsuario(idUsuario), token ?? string.Empty, HttpMethod.Get);
 
                 var clubsUsuario = API.ConsumirApiAsync<object, TodosClubsResponse>(
-                    this.httpClient, RutasAPI.RutaClubs, token, HttpMethod.Get);
+                    this.httpClient, RutasAPI.RutaClubs, token ?? string.Empty, HttpMethod.Get);
 
                 var seguidoresUsuario = API.ConsumirApiAsync<object, SeguidoresUsuarioResponse>(
-                    this.httpClient, RutasAPI.RutaSeguidoresUsuario(idUsuario), token, HttpMethod.Get);
+                    this.httpClient, RutasAPI.RutaSeguidoresUsuario(idUsuario), token ?? string.Empty, HttpMethod.Get);
 
                 var ratingSinglesUsuario = API.ConsumirApiAsync<RatingUsuarioRequest, RatingUsuarioResponse>(
-                    this.httpClient, RutasAPI.RutaHistorialRatingUsuario(idUsuario), token, HttpMethod.Post, Rating.LlenarRatingMensual(DateTime.Now, "SINGLES"));
+                    this.httpClient, RutasAPI.RutaHistorialRatingUsuario(idUsuario), token ?? string.Empty, HttpMethod.Post, Rating.LlenarRatingMensual(DateTime.Now, "SINGLES"));
 
                 var ratingDoublesUsuario = API.ConsumirApiAsync<RatingUsuarioRequest, RatingUsuarioResponse>(
-                    this.httpClient, RutasAPI.RutaHistorialRatingUsuario(idUsuario), token, HttpMethod.Post, Rating.LlenarRatingMensual(DateTime.Now, "DOUBLES"));
+                    this.httpClient, RutasAPI.RutaHistorialRatingUsuario(idUsuario), token ?? string.Empty, HttpMethod.Post, Rating.LlenarRatingMensual(DateTime.Now, "DOUBLES"));
 
                 var historialPartidosUsuario = API.ConsumirApiAsync<HistorialPartidosRequest, HistorialPartidosResponse>(
-                    this.httpClient, RutasAPI.RutaHistorialPartidosUsuario(idUsuario), token, HttpMethod.Post, HistorialPartidos.LlenarParametrosHistorial());
+                    this.httpClient, RutasAPI.RutaHistorialPartidosUsuario(idUsuario), token ?? string.Empty, HttpMethod.Post, HistorialPartidos.LlenarParametrosHistorial());
 
                 await Task.WhenAll(estadisticasUsuario, clubsUsuario, seguidoresUsuario, ratingSinglesUsuario, ratingDoublesUsuario, historialPartidosUsuario);
 
@@ -110,10 +110,12 @@ namespace PBAPP.Controladores
                     return this.View();
                 }
 
-                PerfilInformacionUsuario informacionUsuario = new();
-                informacionUsuario.DashBoard = true;
-                informacionUsuario.PerfilUsuario = infoUsuario;
-                informacionUsuario.Seguidores = seguidores;
+                PerfilInformacionUsuario informacionUsuario = new()
+                {
+                    DashBoard = true,
+                    PerfilUsuario = infoUsuario,
+                    Seguidores = seguidores
+                };
 
                 this.ViewData["informacionUsuario"] = informacionUsuario;
 
@@ -156,7 +158,7 @@ namespace PBAPP.Controladores
                 Console.WriteLine(token);
                 PerfilUsuario infoUsuario = new();
 
-                infoUsuario = await API.ConsumirApiAsync<object, PerfilUsuario>(this.httpClient, RutasAPI.RutaPerfil, token, HttpMethod.Get);
+                infoUsuario = await API.ConsumirApiAsync<object, PerfilUsuario>(this.httpClient, RutasAPI.RutaPerfil, token ?? string.Empty, HttpMethod.Get);
 
                 if (infoUsuario == null)
                 {
@@ -166,7 +168,6 @@ namespace PBAPP.Controladores
 
                 long idUsuario = infoUsuario.Result.Id;
 
-                //*******************************************************************************
                 int totalRegistros = 42; // Puedes traer este número de la API si lo tienes
                 int pageSize = 25;
                 int totalPaginas = (int)Math.Ceiling((double)totalRegistros / pageSize);
@@ -180,7 +181,7 @@ namespace PBAPP.Controladores
                     var tarea = API.ConsumirApiAsync<HistorialPartidosRequest, HistorialPartidosResponse>(
                         this.httpClient,
                         RutasAPI.RutaHistorialPartidosUsuario(idUsuario),
-                        token,
+                        token ?? string.Empty,
                         HttpMethod.Post,
                         HistorialPartidos.LlenarParametrosHistorial(25, offset));
 
@@ -198,7 +199,6 @@ namespace PBAPP.Controladores
                     .ToList();
 
                 resultado = new { Partidos = todosLosPartidos.Count };
-
             }
             catch (Exception ex)
             {
@@ -217,22 +217,22 @@ namespace PBAPP.Controladores
                 string? token = this.manejoSesion.Obtener<string>("token_Peticiones");
 
                 var informacionPerfilExterno = API.ConsumirApiAsync<object, PerilUsuarioExterno>(
-                                    this.httpClient, RutasAPI.RutaPerfilUsuario(perfil), token, HttpMethod.Get);
+                                    this.httpClient, RutasAPI.RutaPerfilUsuario(perfil), token ?? string.Empty, HttpMethod.Get);
 
                 var estadisticasUsuario = API.ConsumirApiAsync<object, EstadisticasUsuarioCalculado>(
-                                    this.httpClient, RutasAPI.RutaEstadisticasUsuario(perfil), token, HttpMethod.Get);
+                                    this.httpClient, RutasAPI.RutaEstadisticasUsuario(perfil), token ?? string.Empty, HttpMethod.Get);
 
                 var seguidoresUsuario = API.ConsumirApiAsync<object, SeguidoresUsuarioResponse>(
-                    this.httpClient, RutasAPI.RutaSeguidoresUsuario(perfil), token, HttpMethod.Get);
+                    this.httpClient, RutasAPI.RutaSeguidoresUsuario(perfil), token ?? string.Empty, HttpMethod.Get);
 
                 var ratingSinglesUsuario = API.ConsumirApiAsync<RatingUsuarioRequest, RatingUsuarioResponse>(
-                    this.httpClient, RutasAPI.RutaHistorialRatingUsuario(perfil), token, HttpMethod.Post, Rating.LlenarRatingMensual(DateTime.Now, "SINGLES"));
+                    this.httpClient, RutasAPI.RutaHistorialRatingUsuario(perfil), token ?? string.Empty, HttpMethod.Post, Rating.LlenarRatingMensual(DateTime.Now, "SINGLES"));
 
                 var ratingDoublesUsuario = API.ConsumirApiAsync<RatingUsuarioRequest, RatingUsuarioResponse>(
-                    this.httpClient, RutasAPI.RutaHistorialRatingUsuario(perfil), token, HttpMethod.Post, Rating.LlenarRatingMensual(DateTime.Now, "DOUBLES"));
+                    this.httpClient, RutasAPI.RutaHistorialRatingUsuario(perfil), token ?? string.Empty, HttpMethod.Post, Rating.LlenarRatingMensual(DateTime.Now, "DOUBLES"));
 
                 var historialPartidosUsuario = API.ConsumirApiAsync<HistorialPartidosRequest, HistorialPartidosResponse>(
-                    this.httpClient, RutasAPI.RutaHistorialPartidosUsuario(perfil), token, HttpMethod.Post, HistorialPartidos.LlenarParametrosHistorial());
+                    this.httpClient, RutasAPI.RutaHistorialPartidosUsuario(perfil), token ?? string.Empty, HttpMethod.Post, HistorialPartidos.LlenarParametrosHistorial());
 
                 await Task.WhenAll(estadisticasUsuario, seguidoresUsuario, ratingSinglesUsuario, ratingDoublesUsuario, historialPartidosUsuario, informacionPerfilExterno);
 
@@ -265,10 +265,12 @@ namespace PBAPP.Controladores
                     return this.View();
                 }
 
-                PerfilInformacionUsuario informacionUsuario = new();
-                informacionUsuario.DashBoard = false;
-                informacionUsuario.PerfilUsuarioExterno = infoUsuario;
-                informacionUsuario.Seguidores = seguidores;
+                PerfilInformacionUsuario informacionUsuario = new()
+                {
+                    DashBoard = false,
+                    PerfilUsuarioExterno = infoUsuario,
+                    Seguidores = seguidores
+                };
 
                 this.ViewData["informacionUsuario"] = informacionUsuario;
 
@@ -300,14 +302,14 @@ namespace PBAPP.Controladores
         [TieneToken]
         public async Task<ActionResult> Mapa()
         {
-            string? token = string.Empty;
+            PerfilUsuario infoUsuario = new();
+            string? token;
             try
             {
                 token = this.manejoSesion.Obtener<string>("token_Peticiones");
                 Console.WriteLine(token);
-                PerfilUsuario infoUsuario = new();
 
-                infoUsuario = await API.ConsumirApiAsync<object, PerfilUsuario>(this.httpClient, RutasAPI.RutaPerfil, token, HttpMethod.Get);
+                infoUsuario = await API.ConsumirApiAsync<object, PerfilUsuario>(this.httpClient, RutasAPI.RutaPerfil, token ?? string.Empty, HttpMethod.Get);
 
                 if (infoUsuario == null)
                 {
@@ -317,7 +319,7 @@ namespace PBAPP.Controladores
             }
             catch (Exception ex)
             {
-                Excepcion.BitacoraErrores(ex.ToString(), new {});
+                Excepcion.BitacoraErrores(ex.ToString(), infoUsuario);
             }
 
             return this.View();

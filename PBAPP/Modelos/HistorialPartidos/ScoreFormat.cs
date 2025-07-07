@@ -2,7 +2,6 @@
 
 namespace PBAPP.Modelos.HistorialPartidos
 {
-
     public class ScoreFormat
     {
         public ScoreFormat()
@@ -33,5 +32,4 @@ namespace PBAPP.Modelos.HistorialPartidos
         [JsonPropertyName("priority")]
         public int Priority { get; set; }
     }
-
 }

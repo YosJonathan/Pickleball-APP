@@ -2,7 +2,6 @@
 
 namespace PBAPP.Modelos.HistorialPartidos
 {
-
     public class MatchPostRating
     {
         public MatchPostRating()
@@ -17,5 +16,4 @@ namespace PBAPP.Modelos.HistorialPartidos
         [JsonPropertyName("doubles")]
         public double? Doubles { get; set; }
     }
-
 }

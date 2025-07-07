@@ -58,7 +58,7 @@ namespace PBAPP.Repositorio
                         sitios.Add(new HistorialPorMapa
                         {
                             Id = Convert.ToInt32(reader["Id"]),
-                            Lugar = reader["Lugar"].ToString(),
+                            Lugar = reader["Lugar"] as string ?? string.Empty,
                             Latencia = Convert.ToDouble(reader["Latencia"]),
                             Longitud = Convert.ToDouble(reader["Longitud"])
                         });
@@ -87,7 +87,7 @@ namespace PBAPP.Repositorio
                         sitios.Add(new HistorialPorMapa
                         {
                             Id = Convert.ToInt32(reader["Id"]),
-                            Lugar = reader["Lugar"].ToString(),
+                            Lugar = reader["Lugar"] as string ?? string.Empty,
                             Latencia = Convert.ToDouble(reader["Latencia"]),
                             Longitud = Convert.ToDouble(reader["Longitud"])
                         });

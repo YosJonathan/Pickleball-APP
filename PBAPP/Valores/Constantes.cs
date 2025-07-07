@@ -18,11 +18,6 @@ public static class Constantes
     public const string Dominio = "https://api.dupr.gg";
 
     /// <summary>
-    /// Key.
-    /// </summary>
-    public const string Key = "AIzaSyAFyRdwt9pF6sPZ4yzvV3iYXho84HQAFes";
-
-    /// <summary>
     /// Archivo de bd.
     /// </summary>
     public const string BD = "Data Source=sitios.db";
@@ -35,7 +30,11 @@ public static class Constantes
     /// <summary>
     /// Imagen por defecto.
     /// </summary>
-    public static string ImagenPorDefecto(bool imagenPerfil = false) { 
+    /// <param name="imagenPerfil">Imagen de perfil.</param>
+    /// <returns>Url de imagen.</returns>
+    public static string ImagenPorDefecto(bool imagenPerfil = false)
+    {
         return imagenPerfil ? "https://cdn-icons-png.flaticon.com/256/3177/3177440.png" :
-            "https://cdn-icons-png.flaticon.com/64/3177/3177440.png"; }
+            "https://cdn-icons-png.flaticon.com/64/3177/3177440.png";
+    }
 }

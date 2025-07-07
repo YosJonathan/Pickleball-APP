@@ -23,7 +23,7 @@ namespace PBAPP.Herramientas
                     while (reader.Read())
                     {
                         var id = Convert.ToInt32(reader["Id"]);
-                        var lugar = reader["Lugar"].ToString();
+                        string? lugar = reader["Lugar"].ToString();
                         var lat = Convert.ToDouble(reader["Latencia"]);
                         var lon = Convert.ToDouble(reader["Longitud"]);
 
@@ -34,7 +34,7 @@ namespace PBAPP.Herramientas
                             sitiosCercanos.Add(new HistorialPorMapa
                             {
                                 Id = id,
-                                Lugar = lugar,
+                                Lugar = string.IsNullOrEmpty(lugar) ? string.Empty : lugar,
                                 Latencia = lat,
                                 Longitud = lon
                             });
@@ -53,9 +53,10 @@ namespace PBAPP.Herramientas
             double deltaLat = GradosARadianes(lat2 - lat1);
             double deltaLon = GradosARadianes(lon2 - lon1);
 
-            double a = Math.Sin(deltaLat / 2) * Math.Sin(deltaLat / 2) +
-                       Math.Cos(radLat1) * Math.Cos(radLat2) *
-                       Math.Sin(deltaLon / 2) * Math.Sin(deltaLon / 2);
+            double a =
+    (Math.Sin(deltaLat / 2) * Math.Sin(deltaLat / 2)) +
+    ((Math.Cos(radLat1) * Math.Cos(radLat2)) *
+     (Math.Sin(deltaLon / 2) * Math.Sin(deltaLon / 2)));
 
             double c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
 

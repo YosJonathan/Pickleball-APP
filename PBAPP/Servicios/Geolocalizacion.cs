@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using PBAPP.Herramientas;
 using PBAPP.Modelos.HistorialPartidos;
 using PBAPP.Valores;
 
@@ -6,11 +7,9 @@ namespace PBAPP.Servicios
 {
     public class Geolocalizacion
     {
-        private const string ApiKey = Constantes.Key; // Reemplaza con tu API Key
-
         public static async Task<HistorialPorMapa?> ObtenerCoordenadasAsync(string direccion)
         {
-            string url = $"https://maps.googleapis.com/maps/api/geocode/json?address={Uri.EscapeDataString(direccion)}&key={ApiKey}";
+            string url = $"https://maps.googleapis.com/maps/api/geocode/json?address={Uri.EscapeDataString(direccion)}&key={ObtenerApiKey()}";
             using (var client = new HttpClient())
             {
                 var response = await client.GetAsync(url);
@@ -45,6 +44,20 @@ namespace PBAPP.Servicios
             }
 
             return null;
+        }
+
+        private static string ObtenerApiKey()
+        {
+            var ruta = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "apikeys.secret.json");
+
+            if (!File.Exists(ruta))
+            {
+                Excepcion.BitacoraErrores("No se encontró el archivo de clave", ruta);
+            }
+
+            var json = File.ReadAllText(ruta);
+            var obj = JObject.Parse(json);
+            return obj["ApiKey"]?.ToString() ?? string.Empty;
         }
     }
 }

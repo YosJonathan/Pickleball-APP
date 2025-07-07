@@ -2,7 +2,6 @@
 
 namespace PBAPP.Modelos.HistorialPartidos
 {
-
     public class MatchResult
     {
         public MatchResult()

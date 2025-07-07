@@ -36,5 +36,4 @@ namespace PBAPP.Modelos.HistorialPartidos
         [JsonPropertyName("validatedMatch")]
         public bool ValidatedMatch { get; set; }
     }
-
 }
