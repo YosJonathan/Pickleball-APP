@@ -9,8 +9,6 @@ namespace PBAPP.Herramientas
             string resultado = string.Empty;
             double? ahora;
 
-
-
             try
             {
                 ahora = tipo.Contains("DOUBLES", StringComparison.CurrentCultureIgnoreCase) ? actuales?.Doubles : actuales?.Singles;
@@ -30,7 +28,7 @@ namespace PBAPP.Herramientas
             return resultado;
         }
 
-        public static string ObtenerNombres(string? nombre1, string? nombre2, string perfilNombre1, string perfilNombre2)
+        public static string ObtenerNombres(string? nombre1, string? nombre2, string? perfilNombre1, string? perfilNombre2)
         {
             string respuesta;
 

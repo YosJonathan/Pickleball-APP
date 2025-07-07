@@ -1,0 +1,118 @@
+﻿@using PBAPP.Herramientas
+@model PBAPP.Modelos.Perfil.PerfilInformacionUsuario
+
+@if (Model.DashBoard)
+{
+    <div class="col-span-1 md:col-span-2 lg:col-span-3 bg-gray-800 rounded-xl p-4 sm:p-6 border border-gray-700">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div class="flex items-center space-x-4">
+                <div class="w-14 h-14 sm:w-16 sm:h-16 bg-primary-500 rounded-full flex items-center justify-center">
+                    @if (string.IsNullOrEmpty(Model?.PerfilUsuario.Result.imageUrl))
+                    {
+                        <span class="text-xl sm:text-2xl font-bold text-white">
+                            @Model?.PerfilUsuario.Result.FullName.Substring(0, 2).ToUpper()
+                        </span>
+                    }
+                    else
+                    {
+                        <img class="rounded-full flex items-center" src="@Model?.PerfilUsuario.Result.imageUrl" loading="lazy" />
+                    }
+                </div>
+                <div>
+                    <h1 class="text-xl sm:text-2xl font-bold text-white">
+                        @Model?.PerfilUsuario.Result.FullName (@Fechas.CalcularEdad(Model?.PerfilUsuario.Result.Birthdate))
+                        <span class="material-symbols-outlined mr-2">@Model?.PerfilUsuario.Result.Gender.ToLower()</span>
+                        <img class="inline-flex items-center justify-center" src="https://flagsapi.com/@Model?.PerfilUsuario.Result.IsoCode/flat/32.png" />
+                        <span class="inline-flex items-center justify-center w-4 h-4 bg-blue-500 rounded-full text-white text-[10px] ml-1">
+                            ✓
+                        </span>
+                    </h1>
+                    <p class="text-gray-400">
+                        @Model?.PerfilUsuario.Result.Addresses[0].FormattedAddress <br />
+                        <b>@Model?.Seguidores.Result.Followings</b> Seguidos
+                        <b>@Model?.Seguidores.Result.Followers</b> Seguidores
+                        <div id="logros" class="text-yellow-200 cursor-pointer">
+                            <span style="font-size:16px;" class="material-symbols-outlined">
+                                trophy
+                            </span> Logros
+                        </div>
+                    </p>
+
+                    <div class="flex items-center space-x-1">
+                        <span id="codigo" class="text-white font-mono bg-gray-700 px-3 py-1 rounded">@Model?.PerfilUsuario.Result.ReferralCode</span>
+
+                        <!-- Botón con ícono de copiar -->
+                        <button onclick="copiarCodigo()" class="text-gray-400 hover:text-white">
+                            <span class="material-symbols-outlined mr-2">copy_all</span>
+                        </button>
+
+                        <!-- Badge de copiado (oculto por defecto) -->
+                        <div id="badge-copiado" class="absolute-top-6 left-1/2-translate-x-1/2 bg-green-500 text-white text-xs font-semibold px-2 py-1 rounded-lg shadow transition-opacity duration-300 opacity-0 pointer-events-none">
+                            Texto copiado
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-left sm:text-right mt-2 sm:mt-0">
+                <div class="text-3xl sm:text-4xl font-bold text-primary-400">@Model?.PerfilUsuario.Result.Stats.Singles / @Model?.PerfilUsuario.Result.Stats.Doubles</div>
+                <p class="text-gray-400">Singles / Doubles</p>
+            </div>
+        </div>
+    </div>
+
+}
+else
+{
+    <div class="col-span-1 md:col-span-2 lg:col-span-3 bg-gray-800 rounded-xl p-4 sm:p-6 border border-gray-700">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div class="flex items-center space-x-4">
+                <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center overflow-hidden">
+
+                    <img class="w-full h-full object-cover" src="@Estilos.ObtenerImagen(Model?.PerfilUsuarioExterno.Result.ImageUrl,true)" loading="lazy" />
+                </div>
+                <div>
+                    <h1 class="text-xl sm:text-2xl font-bold text-white">
+                        @Model?.PerfilUsuarioExterno.Result.FullName (@Model?.PerfilUsuarioExterno?.Result.Age)
+                        <span class="material-symbols-outlined mr-2">@Model?.PerfilUsuarioExterno.Result.Gender.ToLower()</span>
+                        <span class="inline-flex items-center justify-center w-4 h-4 bg-blue-500 rounded-full text-white text-[10px] ml-1">
+                            ✓
+                        </span>
+                    </h1>
+                    <p class="text-gray-400">
+                        @Model?.PerfilUsuarioExterno.Result.ShortAddress <br />
+                        <b>@Model?.Seguidores.Result.Followings</b> Seguidos
+                        <b>@Model?.Seguidores.Result.Followers</b> Seguidores
+                        <div id="logros" class="text-yellow-200 cursor-pointer">
+                            <span style="font-size:16px;" class="material-symbols-outlined">
+                                trophy
+                            </span> Logros
+                        </div>
+                    </p>
+
+                    <div class="flex items-center space-x-1">
+                        <span id="codigo" class="text-white font-mono bg-gray-700 px-3 py-1 rounded">@Model?.PerfilUsuarioExterno.Result.DuprId</span>
+
+                        <!-- Botón con ícono de copiar -->
+                        <button onclick="copiarCodigo()" class="text-gray-400 hover:text-white">
+                            <span class="material-symbols-outlined mr-2">copy_all</span>
+                        </button>
+
+                        <!-- Badge de copiado (oculto por defecto) -->
+                        <div id="badge-copiado" class="absolute-top-6 left-1/2-translate-x-1/2 bg-green-500 text-white text-xs font-semibold px-2 py-1 rounded-lg shadow transition-opacity duration-300 opacity-0 pointer-events-none">
+                            Texto copiado
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-left sm:text-right mt-2 sm:mt-0">
+                <div class="text-3xl sm:text-4xl font-bold text-primary-400">@Model?.PerfilUsuarioExterno.Result.Ratings.Singles / @Model?.PerfilUsuarioExterno.Result.Ratings.Doubles</div>
+                <p class="text-gray-400">Singles / Doubles</p>
+            </div>
+        </div>
+    </div>
+}
+
+<script>
+    var rutaLogros = '@Url.Action("ObtenerTrofeos")';
+</script>
+<script defer src="~/js/Logros.js"></script>

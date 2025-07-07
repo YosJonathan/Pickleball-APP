@@ -8,316 +8,39 @@
 @using System.Text.Json
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
-    PerilUsuarioExterno? infoPefil = this.ViewData["infoPerfil"] as PerilUsuarioExterno;
+    PerfilInformacionUsuario? informacionUsuario = this.ViewData["informacionUsuario"] as PerfilInformacionUsuario;
     EstadisticasUsuarioCalculado? estadisticasUsuario = this.ViewData["estadisticasCalculadas"] as EstadisticasUsuarioCalculado;
-    SeguidoresUsuarioResponse? seguidoresUsuario = this.ViewData["seguidoresUsuario"] as SeguidoresUsuarioResponse;
     List<RatingPorFecha>? ratingPorFechas = this.ViewData["RatingPorMes"] as List<RatingPorFecha>;
     List<HistorialPorMapa>? puntos = this.ViewData["HistorialLugaresPartidos"] as List<HistorialPorMapa>;
     HistorialPartidosResponse? historialPartidos = this.ViewData["HistorialPartidos"] as HistorialPartidosResponse;
-
-
-    var fechas = ratingPorFechas?.Select(x => x.Fecha.ToString("yyyy-MM-dd")) ?? new List<string>();
-    var singles = ratingPorFechas?.Select(x => x.Singles) ?? new List<double>();
-    var doubles = ratingPorFechas?.Select(x => x.Doubles) ?? new List<double>();
 }
 
-@if (infoPefil == null || estadisticasUsuario == null || seguidoresUsuario == null || ratingPorFechas == null || puntos == null)
+@if (informacionUsuario == null || estadisticasUsuario == null || ratingPorFechas == null || puntos == null)
 {
     <p>Problemas al cargar la info</p>
     return;
 }
 
-    @Html.AntiForgeryToken()
+@Html.AntiForgeryToken()
 
 
-    <div id="webcrumbs">
-        <div class="w-full bg-gray-900 min-h-screen p-4 sm:p-6">
-            <div class="flex flex-col gap-4">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 max-w-7xl mx-auto">
+<div id="webcrumbs">
+    <div class="w-full bg-gray-900 min-h-screen p-4 sm:p-6">
+        <div class="flex flex-col gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 max-w-7xl mx-auto">
 
-                    @* Información del Usuario *@
-                    <div class="col-span-1 md:col-span-2 lg:col-span-3 bg-gray-800 rounded-xl p-4 sm:p-6 border border-gray-700">
-                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                            <div class="flex items-center space-x-4">
-                                <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center overflow-hidden">
+                @* Información del Usuario *@
+                @await Html.PartialAsync("_InformacionUsuario", informacionUsuario)
 
-                                    <img class="w-full h-full object-cover" src="@Estilos.ObtenerImagen(infoPefil?.Result.ImageUrl,true)" loading="lazy" />
-                                </div>
-                                <div>
-                                    <h1 class="text-xl sm:text-2xl font-bold text-white">
-                                        @infoPefil?.Result.FullName (@infoPefil?.Result.Age)
-                                        <span class="material-symbols-outlined mr-2">@infoPefil?.Result.Gender.ToLower()</span>
-                                        <span class="inline-flex items-center justify-center w-4 h-4 bg-blue-500 rounded-full text-white text-[10px] ml-1">
-                                            ✓
-                                        </span>
-                                    </h1>
-                                    <p class="text-gray-400">
-                                        @infoPefil?.Result.ShortAddress <br />
-                                        <b>@seguidoresUsuario?.Result.Followings</b> Seguidos
-                                        <b>@seguidoresUsuario?.Result.Followers</b> Seguidores
-                                    <p id="logros" class="text-yellow-200 cursor-pointer">
-                                            <span style="font-size:16px;" class="material-symbols-outlined">
-                                                trophy
-                                            </span> Logros
-                                        </p>
-                                    </p>
+                @* Estadisticas *@
+                @await Html.PartialAsync("_EstadisticasUsuario", estadisticasUsuario)
 
-                                    <div class="flex items-center space-x-1">
-                                        <span id="codigo" class="text-white font-mono bg-gray-700 px-3 py-1 rounded">@infoPefil?.Result.DuprId</span>
+                @* Grafica de Ranking *@
+                @await Html.PartialAsync("_GraficaHistorialRating", ratingPorFechas)
 
-                                        <!-- Botón con ícono de copiar -->
-                                        <button onclick="copiarCodigo()" class="text-gray-400 hover:text-white">
-                                            <span class="material-symbols-outlined mr-2">copy_all</span>
-                                        </button>
-
-                                        <!-- Badge de copiado (oculto por defecto) -->
-                                        <div id="badge-copiado" class="absolute-top-6 left-1/2-translate-x-1/2 bg-green-500 text-white text-xs font-semibold px-2 py-1 rounded-lg shadow transition-opacity duration-300 opacity-0 pointer-events-none">
-                                            Texto copiado
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="text-left sm:text-right mt-2 sm:mt-0">
-                                <div class="text-3xl sm:text-4xl font-bold text-primary-400">@infoPefil?.Result.Ratings.Singles / @infoPefil?.Result.Ratings.Doubles</div>
-                                <p class="text-gray-400">Singles / Doubles</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    @* Estadisticas *@
-                    <div class="bg-gray-800 rounded-xl p-4 sm:p-6 border border-gray-700">
-                        <h2 class="text-lg sm:text-xl font-semibold text-white mb-4 flex items-center">
-                            <span class="material-symbols-outlined mr-2">landscape</span> Estadísticas (Singles / Doubles)
-                        </h2>
-                        <div class="space-y-4">
-                            <div class="flex justify-between items-center">
-                                <span class="text-gray-400">Partidos Jugados</span>
-                                <span class="text-white font-semibold">
-                                    @(estadisticasUsuario.Result.Singles.Wins +
-                                        estadisticasUsuario.Result.Singles.Losses + estadisticasUsuario.Result.Doubles.Wins +
-                                        estadisticasUsuario.Result.Doubles.Losses)
-                                </span>
-                            </div>
-                            <div class="flex justify-between items-center">
-                                <span class="text-gray-400">Victorias</span>
-                                <span class="text-green-400 font-semibold">
-                                    @estadisticasUsuario.Result.Singles.Wins / @estadisticasUsuario.Result.Doubles.Wins
-                                </span>
-                            </div>
-                            <div class="flex justify-between items-center">
-                                <span class="text-gray-400">Derrotas</span>
-                                <span class="text-red-400 font-semibold">
-                                    @estadisticasUsuario.Result.Singles.Losses / @estadisticasUsuario.Result.Doubles.Losses
-                                </span>
-                            </div>
-                            <div class="flex justify-between items-center">
-                                <span class="text-gray-400">Win Rate</span>
-                                <span class="text-primary-400 font-semibold">
-                                    @estadisticasUsuario.Result.Singles.AveragePointsWonPercent / @estadisticasUsuario.Result.Doubles.AveragePointsWonPercent
-                                </span>
-                            </div>
-                            <div class="w-full bg-gray-700 rounded-full h-2">
-                                <div class="bg-primary-500 h-2 rounded-full"
-                                     style="width: @Porcentajes.RedondearPorcentaje(estadisticasUsuario.Result.Singles.AveragePointsWonPercent);"></div>
-                            </div>
-                            <div class="w-full bg-gray-700 rounded-full h-2">
-                                <div class="bg-primary-500 h-2 rounded-full"
-                                     style="width: @Porcentajes.RedondearPorcentaje(estadisticasUsuario.Result.Doubles.AveragePointsWonPercent);"></div>
-                            </div>
-                        </div>
-                    </div>
-
-
-                    @* Grafica de Ranking *@
-                    <div class="col-span-1 md:col-span-1 lg:col-span-2 bg-gray-800 rounded-xl p-4 sm:p-6 border border-gray-700">
-                        <h2 class="text-lg sm:text-xl font-semibold text-white mb-4 flex items-center">
-                            <span class="material-symbols-outlined mr-2">trending_up</span> Ranking  @Fechas.ObtenerNombreMes(DateTime.Now)
-                        </h2>
-                        <div class="h-48 sm:h-64 rounded-lg p-4">
-                            <canvas id="graficoRating" class="w-full h-64 bg-transparent"></canvas>
-                        </div>
-                    </div>
-
-                    @* Ultimos 4 partidos *@
-                    <div class="col-span-1 md:col-span-2 lg:col-span-3 bg-gray-800 rounded-xl p-4 sm:p-6 border border-gray-700">
-                        <h2 class="text-lg sm:text-xl font-semibold text-white mb-4 flex items-center">
-                            <span class="material-symbols-outlined mr-2">
-                                sports_tennis
-                            </span> Ultimos 4 partidos
-                        </h2>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
-                            @if (historialPartidos?.Result.Hits != null)
-                            {
-                                int conteo = 0;
-                                @foreach (var item in historialPartidos.Result.Hits)
-                                {
-                                    if (conteo < 4)
-                                    {
-                                        <div style="min-width:280px;" class="text-white rounded-xl shadow-md overflow-hidden">
-                                            <div class="p-6">
-                                                <div class="flex justify-between items-center mb-4">
-                                                    <h2 class="text-xl text-white font-bold text-gray-800">Match</h2>
-                                                    <span class="px-3 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">@item.EventFormat</span>
-                                                </div>
-
-                                                <div class="flex flex-col md:flex-row justify-between gap-4">
-                                                    @if (item?.Teams[0] != null)
-                                                    {
-                                                        <!-- Team 1 -->
-                                                        <div class="flex flex-col items-center text-center">
-                                                            <div class="flex -space-x-3">
-                                                                @if (item?.Teams[0].Player1 != null)
-                                                                {
-                                                                    <div class="w-12 h-12 rounded-full bg-gray-200 ring-2 ring-gray-800 overflow-hidden z-20">
-                                                                        <img src="@Estilos.ObtenerImagen(item.Teams[0].Player1.ImageUrl)" title="@item.Teams[0].Player1.FullName" class="w-full h-full object-cover" />
-                                                                    </div>
-                                                                }
-                                                                @if (item?.Teams[0].Player2 != null)
-                                                                {
-                                                                    if (!string.IsNullOrEmpty(@item.Teams[0].Player2.FullName))
-                                                                    {
-                                                                        <div class="w-12 h-12 rounded-full bg-gray-200 ring-2 ring-gray-800 overflow-hidden z-10">
-                                                                            <img src="@Estilos.ObtenerImagen(item.Teams[0].Player2.ImageUrl)" title="@item.Teams[0].Player2.FullName" class="w-full h-full object-cover" />
-                                                                        </div>
-                                                                    }
-                                                                }
-                                                            </div>
-                                                            <h3 class="font-bold mt-2">@Html.Raw(CodigoHTML.ObtenerNombres(@item?.Teams[0].Player1.FullName, @item?.Teams[0].Player2.FullName, Url.Action("Perfil", new { perfil = item?.Teams[0].Player1.Id }), Url.Action("Perfil", new { perfil = item?.Teams[0].Player2.Id })))</h3>
-                                                            <div class="flex space-x-2 mt-1">
-                                                                @if (item?.Teams[0].Player1 != null)
-                                                                {
-                                                                    <div class="px-2 py-1 text-xs font-semibold rounded-full">@Html.Raw(CodigoHTML.RetornarEtiquetaRating(item.Teams[0].PrePartidos.RatingImpatcPlayer1, item.Teams[0].PrePartidos.RatingPlayer1, item.Teams[0].Player1.PostMatchRating, @item.EventFormat))</div>
-                                                                }
-                                                                @if (item?.Teams[0].Player2 != null)
-                                                                {
-                                                                    if (!string.IsNullOrEmpty(@item.Teams[0].Player2.FullName))
-                                                                    {
-                                                                        <div class="px-2 py-1 text-xs font-semibold rounded-full">@Html.Raw(CodigoHTML.RetornarEtiquetaRating(item.Teams[0].PrePartidos.RatingImpatcPlayer2, item.Teams[0].PrePartidos.RatingPlayer2, item.Teams[0].Player2.PostMatchRating, @item.EventFormat))</div>
-                                                                    }
-                                                                }
-                                                            </div>
-                                                        </div>
-                                                    }
-
-                                                    <!-- Score -->
-                                                    <div class="flex flex-col items-center justify-center">
-                                                        <div class="text-2xl font-bold text-center space-y-2">
-                                                            <div class="flex items-center space-x-1">
-                                                                <p class="@Estilos.ObtenerColorEtiqueta(item?.Teams)">@item?.Teams[0].Game1</p> <span>-</span> <p class="@Estilos.ObtenerColorEtiqueta(item?.Teams,1,false)">@item?.Teams[1].Game1</p>
-                                                            </div>
-                                                            @if (@item?.Teams[0].Game2 != -1)
-                                                            {
-                                                                <div class="flex items-center space-x-1">
-                                                                    <p class="@Estilos.ObtenerColorEtiqueta(item?.Teams,2)">@item?.Teams[0].Game2</p> - <p class="@Estilos.ObtenerColorEtiqueta(item?.Teams, 2, false)">@item?.Teams[1].Game2</p>
-                                                                </div>
-                                                            }
-
-                                                            @if (@item?.Teams[0].Game3 != -1)
-                                                            {
-                                                                <div class="flex items-center space-x-1">
-                                                                    <p class="@Estilos.ObtenerColorEtiqueta(item?.Teams,3)">@item?.Teams[0].Game3</p> - <p class="@Estilos.ObtenerColorEtiqueta(item?.Teams, 3, false)">@item?.Teams[1].Game3</p>
-                                                                </div>
-                                                            }
-
-                                                            @if (@item?.Teams[0].Game4 != -1)
-                                                            {
-                                                                <div class="flex items-center space-x-1">
-                                                                    <p class="@Estilos.ObtenerColorEtiqueta(item?.Teams,4)">@item?.Teams[0].Game4</p> - <p class="@Estilos.ObtenerColorEtiqueta(item?.Teams, 4, false)">@item?.Teams[1].Game4</p>
-                                                                </div>
-                                                            }
-
-                                                            @if (@item?.Teams[0].Game5 != -1)
-                                                            {
-                                                                <div class="flex items-center space-x-1">
-                                                                    <p class="@Estilos.ObtenerColorEtiqueta(item?.Teams,5)">@item?.Teams[0].Game5</p> - <p class="@Estilos.ObtenerColorEtiqueta(item?.Teams, 5, false)">@item?.Teams[1].Game5</p>
-                                                                </div>
-                                                            }
-                                                        </div>
-                                                    </div>
-
-                                                    @if (item?.Teams[1] != null)
-                                                    {
-                                                        <!-- Team 2 -->
-                                                        <div class="flex flex-col items-center text-center">
-                                                            <div class="flex -space-x-3">
-                                                                @if (item?.Teams[1].Player1 != null)
-                                                                {
-                                                                    <div class="w-12 h-12 rounded-full bg-gray-200 ring-2 ring-gray-800 overflow-hidden z-20">
-                                                                        <img src="@Estilos.ObtenerImagen(item.Teams[1].Player1.ImageUrl)" title="@item.Teams[1].Player1.FullName" class="w-full h-full object-cover" />
-                                                                    </div>
-                                                                }
-                                                                @if (item?.Teams[1].Player2 != null)
-                                                                {
-                                                                    if (!string.IsNullOrEmpty(@item.Teams[1].Player2.FullName))
-                                                                    {
-                                                                        <div class="w-12 h-12 rounded-full bg-gray-200 ring-2 ring-gray-800 overflow-hidden z-10">
-                                                                            <img src="@Estilos.ObtenerImagen(item.Teams[1].Player2.ImageUrl)" title="@item.Teams[1].Player2.FullName" class="w-full h-full object-cover" />
-                                                                        </div>
-                                                                    }
-                                                                }
-                                                            </div>
-                                                            <h3 class="font-bold mt-2">
-                                                                @Html.Raw(CodigoHTML.ObtenerNombres(@item?.Teams[1].Player1.FullName, @item?.Teams[1].Player2.FullName, Url.Action("Perfil", new { perfil = item?.Teams[1].Player1.Id }), Url.Action("Perfil", new { perfil = item?.Teams[1].Player2.Id })))
-                                                            </h3>
-                                                            <div class="flex space-x-2 mt-1">
-                                                                @if (item?.Teams[1].Player1 != null)
-                                                                {
-                                                                    <div class="px-2 py-1 text-xs font-semibold rounded-full">@Html.Raw(CodigoHTML.RetornarEtiquetaRating(item.Teams[1].PrePartidos.RatingImpatcPlayer1, item.Teams[1].PrePartidos.RatingPlayer1, item.Teams[1].Player1.PostMatchRating, @item.EventFormat))</div>
-                                                                }
-                                                                @if (item?.Teams[1].Player2 != null)
-                                                                {
-                                                                    if (!string.IsNullOrEmpty(@item.Teams[1].Player2.FullName))
-                                                                    {
-                                                                        <div class="px-2 py-1 text-xs font-semibold rounded-full">@Html.Raw(CodigoHTML.RetornarEtiquetaRating(item.Teams[1].PrePartidos.RatingImpatcPlayer2, item.Teams[1].PrePartidos.RatingPlayer2, item.Teams[1].Player2.PostMatchRating, @item.EventFormat))</div>
-                                                                    }
-                                                                }
-                                                            </div>
-                                                        </div>
-                                                    }
-                                                </div>
-
-                                                <div class="border-t border-gray-200 my-4"></div>
-
-                                                <div class="flex flex-col sm:flex-row text-sm">
-                                                    <div class="flex items-center">
-                                                        <span class="material-symbols-outlined">
-                                                            distance
-                                                        </span>
-                                                        <span>@item?.Location</span>
-                                                    </div>
-                                                </div>
-                                                <div class="flex flex-col sm:flex-row text-sm">
-                                                    <div class="flex items-center mt-2 sm:mt-0">
-                                                        <span class="material-symbols-outlined mr-1">
-                                                            event
-                                                        </span>
-                                                        <span>@item?.League</span>
-                                                    </div>
-                                                </div>
-                                                <div class="flex flex-col sm:flex-row text-sm">
-                                                    <span class="material-symbols-outlined mr-1">
-                                                        calendar_today
-                                                    </span>
-                                                    <span>@Fechas.ObtenerFechaTexto(item?.Created)</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    }
-                                    conteo++;
-                                }
-                            }
-                        </div>
-                    </div>
-                </div>
+                @* Ultimos 4 partidos *@                
+                @await Html.PartialAsync("_UltimosPartidos", historialPartidos)
             </div>
         </div>
     </div>
-
-    <script>
-        const labels = @Html.Raw(JsonSerializer.Serialize(fechas));
-        const singlesData = @Html.Raw(JsonSerializer.Serialize(singles));
-        const doublesData = @Html.Raw(JsonSerializer.Serialize(doubles));
-        var rutaLogros = '@Url.Action("ObtenerTrofeos")';
-    </script>
-    <script defer src="~/js/Logros.js"></script>
-    <script defer src="~/js/Grafica.js"></script>
+</div>

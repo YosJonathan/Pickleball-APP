@@ -44,9 +44,6 @@ namespace PBAPP.Controladores
                     return this.View();
                 }
 
-                this.ViewData["infoPerfil"] = infoUsuario;
-
-
                 if (infoUsuario.Result.Addresses.Count > 0)
                 {
                     Address direccion = infoUsuario.Result.Addresses[0];
@@ -113,7 +110,12 @@ namespace PBAPP.Controladores
                     return this.View();
                 }
 
-                this.ViewData["seguidoresUsuario"] = seguidores;
+                PerfilInformacionUsuario informacionUsuario = new();
+                informacionUsuario.DashBoard = true;
+                informacionUsuario.PerfilUsuario = infoUsuario;
+                informacionUsuario.Seguidores = seguidores;
+
+                this.ViewData["informacionUsuario"] = informacionUsuario;
 
                 if (!double.TryParse(infoUsuario.Result.Stats.Singles, out double singles))
                 {
@@ -263,7 +265,12 @@ namespace PBAPP.Controladores
                     return this.View();
                 }
 
-                this.ViewData["seguidoresUsuario"] = seguidores;
+                PerfilInformacionUsuario informacionUsuario = new();
+                informacionUsuario.DashBoard = false;
+                informacionUsuario.PerfilUsuarioExterno = infoUsuario;
+                informacionUsuario.Seguidores = seguidores;
+
+                this.ViewData["informacionUsuario"] = informacionUsuario;
 
                 if (!double.TryParse(infoUsuario.Result.Ratings.Singles, out double singles))
                 {

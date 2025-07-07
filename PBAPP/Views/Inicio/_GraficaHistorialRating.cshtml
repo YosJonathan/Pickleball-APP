@@ -1,0 +1,28 @@
+﻿@using PBAPP.Herramientas
+@using PBAPP.Modelos.RatingUsuario
+@using System.Text.Json
+@model List<PBAPP.Modelos.RatingUsuario.RatingPorFecha>
+@{
+    List<RatingPorFecha> ratingPorFechas = Model as List<RatingPorFecha>;
+
+    var fechas = ratingPorFechas?.Select(x => x.Fecha.ToString("yyyy-MM-dd")) ?? new List<string>();
+    var singles = ratingPorFechas?.Select(x => x.Singles) ?? new List<double>();
+    var doubles = ratingPorFechas?.Select(x => x.Doubles) ?? new List<double>();
+}
+
+<div class="col-span-1 md:col-span-1 lg:col-span-2 bg-gray-800 rounded-xl p-4 sm:p-6 border border-gray-700">
+    <h2 class="text-lg sm:text-xl font-semibold text-white mb-4 flex items-center">
+        <span class="material-symbols-outlined mr-2">trending_up</span> Ranking  @Fechas.ObtenerNombreMes(DateTime.Now)
+    </h2>
+    <div class="h-48 sm:h-64 rounded-lg p-4">
+        <canvas id="graficoRating" class="w-full h-64 bg-transparent"></canvas>
+    </div>
+</div>
+
+<script>
+    const labels = @Html.Raw(JsonSerializer.Serialize(fechas));
+    const singlesData = @Html.Raw(JsonSerializer.Serialize(singles));
+    const doublesData = @Html.Raw(JsonSerializer.Serialize(doubles));
+</script>
+
+<script defer src="~/js/Grafica.js"></script>
