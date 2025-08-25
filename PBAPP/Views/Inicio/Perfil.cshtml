@@ -15,7 +15,7 @@
     HistorialPartidosResponse? historialPartidos = this.ViewData["HistorialPartidos"] as HistorialPartidosResponse;
 }
 
-@if (informacionUsuario == null || estadisticasUsuario == null || ratingPorFechas == null || puntos == null)
+@if (informacionUsuario == null || estadisticasUsuario == null || ratingPorFechas == null)
 {
     <p>Problemas al cargar la info</p>
     return;
