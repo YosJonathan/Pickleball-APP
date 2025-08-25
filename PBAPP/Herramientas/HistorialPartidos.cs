@@ -30,14 +30,14 @@ namespace PBAPP.Herramientas
 
         internal static async Task<List<HistorialPorMapa>> GenerarLugaresPartidos(HistorialPartidosResponse historialPartidos)
         {
-            List<HistorialPorMapa> historial = [.. historialPartidos.Result.Hits
+            List<HistorialPorMapa> historial = historialPartidos.Result.Hits
             .GroupBy(hit => hit.Location)
             .Select(grupo => new HistorialPorMapa
             {
                 Lugar = grupo.Key,
                 Latencia = 0, // puedes dejarlo así por ahora
                 Longitud = 0
-            })];
+            }).ToList();
 
             foreach (var item in historial)
             {

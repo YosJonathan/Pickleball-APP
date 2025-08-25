@@ -1,8 +1,13 @@
 ﻿namespace PBAPP.Herramientas
 {
-    public class ManejoSesion(IHttpContextAccessor httpContextAccessor)
+    public class ManejoSesion
     {
-        private readonly IHttpContextAccessor httpContextAccessor = httpContextAccessor;
+        private readonly IHttpContextAccessor httpContextAccessor;
+
+        public ManejoSesion(IHttpContextAccessor httpContextAccessor)
+        {
+            this.httpContextAccessor = httpContextAccessor;
+        }
 
         public void Agregar<T>(string key, T value)
         {

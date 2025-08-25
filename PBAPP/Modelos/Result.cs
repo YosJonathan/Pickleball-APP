@@ -12,7 +12,7 @@
             this.Birthdate = string.Empty;
             this.Gender = string.Empty;
             this.Stats = new Stats();
-            this.Addresses = [];
+            this.Addresses = new List<Address>();
         }
 
         public long Id { get; set; }

@@ -19,11 +19,17 @@ using static System.Reflection.Metadata.BlobBuilder;
 
 namespace PBAPP.Controladores
 {
-    public class InicioController(ManejoSesion manejoSesion, IHttpClientFactory httpClientFactory) : Controller
+    public class InicioController : Controller
     {
-        private readonly ManejoSesion manejoSesion = manejoSesion;
+        private readonly ManejoSesion manejoSesion;
 
-        private readonly HttpClient httpClient = httpClientFactory.CreateClient();
+        private readonly HttpClient httpClient;
+
+        public InicioController(ManejoSesion manejoSesion, IHttpClientFactory httpClientFactory)
+        {
+            this.httpClient = httpClientFactory.CreateClient();
+            this.manejoSesion = manejoSesion;
+        }
 
         [TieneToken]
         public async Task<IActionResult> Dashboard()

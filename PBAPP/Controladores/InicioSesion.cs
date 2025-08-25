@@ -11,11 +11,17 @@ using PBAPP.Valores;
 
 namespace PBAPP.Controladores
 {
-    public class InicioSesion(ManejoSesion manejoSesion, IHttpClientFactory httpClientFactory) : Controller
+    public class InicioSesion : Controller
     {
-        private readonly HttpClient httpClient = httpClientFactory.CreateClient();
+        private readonly HttpClient httpClient;
 
-        private readonly ManejoSesion manejoSesion = manejoSesion;
+        private readonly ManejoSesion manejoSesion;
+
+        public InicioSesion(ManejoSesion manejoSesion, IHttpClientFactory httpClientFactory)
+        {
+            this.httpClient = httpClientFactory.CreateClient();
+            this.manejoSesion = manejoSesion;
+        }
 
         [HttpGet]
         public IActionResult IniciarSesion()

@@ -11,7 +11,7 @@ namespace PBAPP.Modelos.ClubsTodos
         public TodosClubsResponse()
         {
             this.Status = string.Empty;
-            this.Results = [];
+            this.Results = new List<Result>();
         }
 
         [JsonPropertyName("status")]
