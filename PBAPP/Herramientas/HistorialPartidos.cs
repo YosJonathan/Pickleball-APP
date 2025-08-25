@@ -39,37 +39,37 @@ namespace PBAPP.Herramientas
                 Longitud = 0
             }).ToList();
 
-            foreach (var item in historial)
-            {
-                var resultado = SitioRepositorio.BuscarSitiosPorLugar(item.Lugar);
+            //foreach (var item in historial)
+            //{
+            //    var resultado = SitioRepositorio.BuscarSitiosPorLugar(item.Lugar);
 
-                if (string.IsNullOrEmpty(item.Lugar))
-                {
-                    Console.WriteLine($"Lugar vacio: {item.Lugar}");
-                }
-                else
-                {
-                    if (resultado.Count == 0)
-                    {
-                        Console.WriteLine($"No existe registro para: {item.Lugar}");
-                        HistorialPorMapa? geolocalizacion = await Geolocalizacion.ObtenerCoordenadasAsync(item.Lugar);
-                        if (geolocalizacion != null)
-                        {
-                            SitioRepositorio.AgregarSitio(geolocalizacion);
+            //    if (string.IsNullOrEmpty(item.Lugar))
+            //    {
+            //        Console.WriteLine($"Lugar vacio: {item.Lugar}");
+            //    }
+            //    else
+            //    {
+            //        if (resultado.Count == 0)
+            //        {
+            //            Console.WriteLine($"No existe registro para: {item.Lugar}");
+            //            HistorialPorMapa? geolocalizacion = await Geolocalizacion.ObtenerCoordenadasAsync(item.Lugar);
+            //            if (geolocalizacion != null)
+            //            {
+            //                SitioRepositorio.AgregarSitio(geolocalizacion);
 
-                            Console.WriteLine($"Registro encontrado y guardado para: {item.Lugar}");
-                        }
-                        else
-                        {
-                            Console.WriteLine($"Geolocalizacion es nula: {item.Lugar}");
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Existe registro para: {item.Lugar}");
-                    }
-                }
-            }
+            //                Console.WriteLine($"Registro encontrado y guardado para: {item.Lugar}");
+            //            }
+            //            else
+            //            {
+            //                Console.WriteLine($"Geolocalizacion es nula: {item.Lugar}");
+            //            }
+            //        }
+            //        else
+            //        {
+            //            Console.WriteLine($"Existe registro para: {item.Lugar}");
+            //        }
+            //    }
+            //}
 
             return historial;
         }
