@@ -138,7 +138,7 @@ namespace PBAPP.Controladores
                 List<RatingPorFecha> ratingPorFechas = Rating.GenerarHistorialGrafica(ratingSingles, ratingDoubles, singles, doubles);
                 this.ViewData["RatingPorMes"] = ratingPorFechas;
 
-                List<HistorialPorMapa> historial = await HistorialPartidos.GenerarLugaresPartidos(historialPartidos);
+                //List<HistorialPorMapa> historial = await HistorialPartidos.GenerarLugaresPartidos(historialPartidos);
                 this.ViewData["HistorialLugaresPartidos"] = historial;
                 this.ViewData["HistorialPartidos"] = historialPartidos;
             }
@@ -293,7 +293,7 @@ namespace PBAPP.Controladores
                 List<RatingPorFecha> ratingPorFechas = Rating.GenerarHistorialGrafica(ratingSingles, ratingDoubles, singles, doubles);
                 this.ViewData["RatingPorMes"] = ratingPorFechas;
 
-                List<HistorialPorMapa> historial = await HistorialPartidos.GenerarLugaresPartidos(historialPartidos);
+                //List<HistorialPorMapa> historial = await HistorialPartidos.GenerarLugaresPartidos(historialPartidos);
                 this.ViewData["HistorialLugaresPartidos"] = historial;
                 this.ViewData["HistorialPartidos"] = historialPartidos;
             }
