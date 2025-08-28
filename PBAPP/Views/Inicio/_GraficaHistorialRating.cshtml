@@ -19,11 +19,68 @@
     </div>
 </div>
 
-<script defer>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script >
     const labels = JSON.parse('@Html.Raw(JsonSerializer.Serialize(fechas))');
     const singlesData = JSON.parse('@Html.Raw(JsonSerializer.Serialize(singles))');
     const doublesData = JSON.parse('@Html.Raw(JsonSerializer.Serialize(doubles))');
             </script>
 
 
-<script  defer src="@Url.Content("~/js/Grafica.js")"></script>
+<script >
+    const ctx = document.getElementById('graficoRating').getContext('2d');
+
+const lineChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: labels,
+        datasets: [
+            {
+                label: 'Singles',
+                data: singlesData,
+                borderColor: '#3b82f6',
+                backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                tension: 0.4,
+            },
+            {
+                label: 'Doubles',
+                data: doublesData,
+                borderColor: '#10b981',
+                backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                tension: 0.4,
+            }
+        ]
+    },
+    options: {
+        backgroundColor: 'transparent',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                labels: {
+                    color: '#ffffff'
+                }
+            }
+        },
+        scales: {
+            x: {
+                ticks: {
+                    color: '#ffffff'
+                },
+                grid: {
+                    color: 'rgba(255, 255, 255, 0.1)'
+                }
+            },
+            y: {
+                ticks: {
+                    color: '#ffffff'
+                },
+                grid: {
+                    color: 'rgba(255, 255, 255, 0.1)'
+                }
+            }
+        }
+    }
+});
+</script>
